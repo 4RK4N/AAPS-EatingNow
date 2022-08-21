@@ -104,7 +104,7 @@ android {
 
     defaultConfig {
         multiDexEnabled true
-        versionCode 1509
+        versionCode 1510
         version "3.1.0.3-EatingNow-ESEL"
         buildConfigField "String", "VERSION", '"' + version + '"'
         buildConfigField "String", "BUILDVERSION",   '"' + 'EN-' + generateGitBuild()[0..7] + '-' + generateDate() + '"'
