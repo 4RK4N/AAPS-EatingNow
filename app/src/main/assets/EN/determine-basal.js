@@ -1213,6 +1213,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
 
     insulinReq_sens = round(insulinReq_sens,1);
+    rT.variable_sens = insulinReq_sens;
     enlog += "* eBGweight:\n";
     enlog += "sens_predType: " + sens_predType+"\n";
     enlog += "eBGweight final result: " + eBGweight +"\n";
