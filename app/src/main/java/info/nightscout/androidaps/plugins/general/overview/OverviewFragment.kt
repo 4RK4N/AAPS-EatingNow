@@ -689,7 +689,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
                 }
                 // Show variable sensitivity
                 val request = loop.lastRun?.request
-                if (request is DetermineBasalResultSMB) {
+                if (request is DetermineBasalResultSMB || request is DetermineBasalResultEN) {
                     val isfMgdl = profile?.getIsfMgdl()
                     val variableSens = request.variableSens
                     if (variableSens != isfMgdl && variableSens != null && isfMgdl != null) {
