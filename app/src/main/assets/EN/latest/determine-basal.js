@@ -465,18 +465,21 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     // TDD ********************************
     // define default vars
     var SR_TDD = 1, sens_TDD = sens;
-    var TDD = meal_data.TDD;
+    // Only do calculations when TDD settings are enabled
+    if (profile.use_sens_TDD || profile.enableSRTDD) {
+      var TDD = meal_data.TDD;
 
-    // SR_TDD ********************************
-    var SR_TDD = meal_data.TDDLastCannula / meal_data.TDDAvgtoCannula;
-    //var endebug = "AtoC=" + round(meal_data.TDDAvgtoCannula,2) + " LC=" + round(meal_data.TDDLastCannula,2);
+      // SR_TDD ********************************
+      var SR_TDD = meal_data.TDDLastCannula / meal_data.TDDAvgtoCannula;
+      //var endebug = "AtoC=" + round(meal_data.TDDAvgtoCannula,2) + " LC=" + round(meal_data.TDDLastCannula,2);
 
-    // ISF based on TDD
-    var sens_TDD = 1800 / (TDD * (Math.log((normalTarget / ins_val) + 1)));
-    enlog += "sens_TDD:" + convert_bg(sens_TDD, profile) + "\n";
-    sens_TDD = sens_TDD / (profile.sens_TDD_scale / 100);
-    sens_TDD = (sens_TDD > sens * 3 ? sens : sens_TDD); // fresh install of v3
-    enlog += "sens_TDD scaled by " + profile.sens_TDD_scale + "%:" + convert_bg(sens_TDD, profile) + "\n";
+      // ISF based on TDD
+      var sens_TDD = 1800 / (TDD * (Math.log((normalTarget / ins_val) + 1)));
+      enlog += "sens_TDD:" + convert_bg(sens_TDD, profile) + "\n";
+      sens_TDD = sens_TDD / (profile.sens_TDD_scale / 100);
+      sens_TDD = (sens_TDD > sens * 3 ? sens : sens_TDD); // fresh install of v3
+      enlog += "sens_TDD scaled by " + profile.sens_TDD_scale + "%:" + convert_bg(sens_TDD, profile) + "\n";
+    }  
 
     enlog += "* advanced ISF:\n";
     // Limit ISF increase for sens_currentBG at 10mmol / 180mgdl
