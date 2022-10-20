@@ -465,7 +465,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     // TDD ********************************
     // define default vars
     var SR_TDD = 1, sens_TDD = sens, TDD = 0;
-    //if (profile.use_sens_TDD || profile.enableSRTDD) {
+    if (profile.use_sens_TDD || profile.enableSRTDD) {
         var tdd7 = meal_data.TDDAvg7d;
         var tdd1 = meal_data.TDDAvg1d;
         var tdd_4 = meal_data.TDDLast4h;
@@ -495,7 +495,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         sens_TDD = sens_TDD / (profile.sens_TDD_scale / 100);
         sens_TDD = (sens_TDD > sens * 3 ? sens : sens_TDD); // fresh install of v3
         enlog += "sens_TDD scaled by " + profile.sens_TDD_scale + "%:" + convert_bg(sens_TDD, profile) + "\n";
-  //  }
+    }
 
     enlog += "* advanced ISF:\n";
     // Limit ISF increase for sens_currentBG at 10mmol / 180mgdl
