@@ -1809,10 +1809,10 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             // BG+ is the only EN prediction type allowed outside of ENW
             ENMaxSMB = (sens_predType == "BG+" ? Math.min(profile.EN_BGPlus_maxBolus,EN_NoENW_maxBolus) : ENMaxSMB);
             if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus > 0) {
-                var maxTBR = (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * 12;
-                var TBR = Math.min(4.5 / TIR_sens_limited * profile.current_basal,maxTBR);  // 4.5 x the current TIRS base max is SMB at appropriate time
-                ENMaxSMB = TBR / 12;
-                var endebug = "maxTBR:" + maxTBR + ",TBR:" + TBR + ",ENMaxSMB:" + ENMaxSMB;
+                //ENMaxSMB = profile.current_basal / 12 + (0.5 / TIR_sens_limited * (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig));
+                //ENMaxSMB = (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) / (autosens_max / TIR_sens_limited);
+                ENMaxSMB = profile.current_basal / 12 + (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * (autosens_max - TIR_sens_limited) * autosens_max;
+                ENMaxSMB = Math.min(ENMaxSMB, (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig));
             }
 
             // if ENMaxSMB is more than 0 use ENMaxSMB else use AAPS max minutes
