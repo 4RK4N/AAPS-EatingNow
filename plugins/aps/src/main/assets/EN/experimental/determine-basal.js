@@ -1263,7 +1263,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     if (UAMBGPreBolus && sens_predType != "UAM+") sens_predType = "PB";
 
     // BG+ outside of UAM prediction when resistant, lower range when asleep
-    if (profile.EN_BGPlus_maxBolus != 0 && delta > -4 && delta <= 6 && glucose_status.long_avgdelta >-4 && eventualBG <= threshold) {
+    if (profile.EN_BGPlus_maxBolus != 0 && delta > -4 && delta <= 6 && glucose_status.long_avgdelta >-4 && (eventualBG <= threshold || sens_predType == "NA")) {
         if (TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
     }
 
@@ -1811,7 +1811,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus > 0) {
                 //ENMaxSMB = profile.current_basal / 12 + (0.5 / TIR_sens_limited * (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig));
                 //ENMaxSMB = (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) / (autosens_max / TIR_sens_limited);
-                ENMaxSMB = profile.current_basal / 12 + (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
+                //ENMaxSMB = profile.current_basal / 12 + (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
+                ENMaxSMB = (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
                 ENMaxSMB = Math.min(ENMaxSMB, (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig));
             }
 
