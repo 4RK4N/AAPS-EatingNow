@@ -1263,7 +1263,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     if (UAMBGPreBolus && sens_predType != "UAM+") sens_predType = "PB";
 
     // BG+ outside of UAM prediction when resistant, lower range when asleep
-    if (!ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && delta > -4 && delta <= 6 && glucose_status.long_avgdelta >-4 && (eventualBG <= threshold || sens_predType == "NA")) {
+    if (!ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && delta > -4 && delta <= 6 && glucose_status.long_avgdelta >-4 && glucose_status.long_avgdelta < 6 && (eventualBG <= threshold || sens_predType == "NA")) {
         if (TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
     }
 
