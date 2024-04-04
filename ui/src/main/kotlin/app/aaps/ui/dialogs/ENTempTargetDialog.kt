@@ -21,6 +21,10 @@ import app.aaps.core.interfaces.profile.ProfileFunction
 import app.aaps.core.interfaces.profile.ProfileUtil
 import app.aaps.core.interfaces.protection.ProtectionCheck
 import app.aaps.core.interfaces.resources.ResourceHelper
+import app.aaps.core.interfaces.utils.HardLimits
+import app.aaps.core.interfaces.utils.SafeParse
+import app.aaps.core.main.constraints.ConstraintObject
+import app.aaps.core.main.utils.extensions.formatColor
 import app.aaps.core.ui.dialogs.OKDialog
 import app.aaps.core.ui.toast.ToastUtils
 import app.aaps.core.utils.HtmlHelper
@@ -57,6 +61,7 @@ class ENTempTargetDialog : DialogFragmentWithDate() {
     @Inject lateinit var protectionCheck: ProtectionCheck
     @Inject lateinit var decimalFormatter: DecimalFormatter
     @Inject lateinit var activePlugin: ActivePlugin
+    @Inject lateinit var hardLimits: HardLimits
 
     private lateinit var reasonList: List<String>
 
@@ -128,6 +133,14 @@ class ENTempTargetDialog : DialogFragmentWithDate() {
                     ?: enTT,
                 Constants.MIN_TT_MGDL, Constants.MAX_TT_MGDL, 1.0, DecimalFormat("0"), false, binding.okcancel.ok)
 
+        //ENW-IOB amount default
+        val maxIOB = hardLimits.maxIobSMB()
+        binding.enwIob.setParams(
+            savedInstanceState?.getDouble("enw_iob")
+                ?: defaultValueHelper.determineEatingNowIOB(), 0.0, maxIOB, activePlugin.activePump.pumpDescription.bolusStep, decimalFormatter.pumpSupportedBolusFormat(activePlugin.activePump.pumpDescription.bolusStep), false, binding
+                .okcancel.ok, textWatcher
+        )
+
         //prebolus amount
         // val maxInsulin = constraintChecker.getMaxBolusAllowed().value()
         val maxInsulin = Constants.MAX_EN_PREBOLUS
@@ -190,16 +203,22 @@ class ENTempTargetDialog : DialogFragmentWithDate() {
 
     override fun submit(): Boolean {
         if (_binding == null) return false
+        val pumpDescription = activePlugin.activePump.pumpDescription
+        val insulin = SafeParse.stringToDouble(binding.amount.text)
+        val insulinAfterConstraints = constraintChecker.applyBolusConstraints(ConstraintObject(insulin, aapsLogger)).value()
         val actions: LinkedList<String> = LinkedList()
         var reason = binding.reasonList.text.toString()
         val unitResId = if (profileFunction.getUnits() == GlucoseUnit.MGDL) app.aaps.core.ui.R.string.mgdl else app.aaps.core.ui.R.string.mmol
         val target = binding.temptarget.value
         val duration = binding.duration.value.toInt()
         sp.putDouble("ENdb_PreBolusUnits",binding.amount.value) // add the prebolus amount for DetermineBasalAdapterENJS.kt
+        sp.putDouble("ENdb_ENWIOBUnits",binding.enwIob.value) // add the ENWIOB amount for DetermineBasalAdapterENJS.kt
         if (target != 0.0 && duration != 0) {
-            actions.add(rh.gs(app.aaps.core.ui.R.string.reason) + ": " + reason)
+            // actions.add(rh.gs(app.aaps.core.ui.R.string.reason) + ": " + reason)
             actions.add(rh.gs(app.aaps.core.ui.R.string.target_label) + ": " + profileUtil.stringInCurrentUnitsDetect(target) + " " + rh.gs(unitResId))
             actions.add(rh.gs(app.aaps.core.ui.R.string.duration) + ": " + rh.gs(app.aaps.core.ui.R.string.format_mins, duration))
+            actions.add("Pre-Bolus: " + decimalFormatter.toPumpSupportedBolus(insulinAfterConstraints, activePlugin.activePump.pumpDescription.bolusStep).formatColor(context, rh, app.aaps.core.ui.R.attr.bolusColor))
+            actions.add("ENW-IOB Limit: " + binding.enwIob.text)
         } else {
             actions.add(rh.gs(app.aaps.core.ui.R.string.stoptemptarget))
             reason = rh.gs(app.aaps.core.ui.R.string.stoptemptarget)
@@ -208,7 +227,7 @@ class ENTempTargetDialog : DialogFragmentWithDate() {
             actions.add(rh.gs(app.aaps.core.ui.R.string.time) + ": " + dateUtil.dateAndTimeString(eventTime))
 
         activity?.let { activity ->
-            OKDialog.showConfirmation(activity, rh.gs(app.aaps.core.ui.R.string.temporary_target), HtmlHelper.fromHtml(Joiner.on("<br/>").join(actions)), {
+            OKDialog.showConfirmation(activity, reason, HtmlHelper.fromHtml(Joiner.on("<br/>").join(actions)), {
                 val units = profileFunction.getUnits()
                 when (reason) {
                     rh.gs(app.aaps.core.ui.R.string.eatingnow)     -> uel.log(
@@ -223,7 +242,7 @@ class ENTempTargetDialog : DialogFragmentWithDate() {
                         ), ValueWithUnit.fromGlucoseUnit(target, units.asText), ValueWithUnit.Minute(duration)
                     )
 
-                    rh.gs(app.aaps.core.ui.R.string.stoptemptarget) -> uel.log(UserEntry.Action.CANCEL_TT, UserEntry.Sources.TTDialog, ValueWithUnit.Timestamp(eventTime).takeIf { eventTimeChanged })
+                    rh.gs(app.aaps.core.ui.R.string.stopeatingnow) -> uel.log(UserEntry.Action.CANCEL_TT, UserEntry.Sources.TTDialog, ValueWithUnit.Timestamp(eventTime).takeIf { eventTimeChanged })
                 }
                 if (target == 0.0 || duration == 0) {
                     disposable += repository.runTransactionForResult(CancelCurrentTemporaryTargetIfAnyTransaction(eventTime))

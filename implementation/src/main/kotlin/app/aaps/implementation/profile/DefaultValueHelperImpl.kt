@@ -74,6 +74,16 @@ class DefaultValueHelperImpl @Inject constructor(
         }
     }
 
+    override fun determineEatingNowIOB(): Double {
+        return if (sp.getBoolean("ENdb_firstMealWindow", false)) {
+            val value = sp.getDouble(app.aaps.core.utils.R.string.key_enw_breakfast_max_tdd, 0.0) // ENW-IOB breakfast
+            value
+        } else {
+            val value = sp.getDouble(app.aaps.core.utils.R.string.key_enw_max_tdd, 0.0) // ENW-IOB
+            value
+        }
+    }
+
     override fun determineEatingNowPreBolus(): Double {
         return if (sp.getBoolean("ENdb_firstMealWindow", false)) {
             val value = sp.getDouble(app.aaps.core.utils.R.string.key_eatingnow_uambgboost_maxbolus_bkfast, 0.0)
