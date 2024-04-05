@@ -554,7 +554,7 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
             }
 
             // TIRB1 - lower band
-            tirCalculator.averageTIR(tirCalculator.calculateByTime(TIRStart,3.0,normalTargetBG-9.0, normalTargetBG + 15.0)).let { tir ->
+            tirCalculator.averageTIR(tirCalculator.calculateByTime(TIRStart,3.0,normalTargetBG-9.0, normalTargetBG + 18.0)).let { tir ->
                 this.mealData.put("TIR_L_pct",tir.belowPct())
                 this.mealData.put("TIR_L",1 - ((TIRHrs * resistancePerHr / 100) * (tir.belowPct()/100)) )
                 this.mealData.put("TIR_M_pct",tir.abovePct())
