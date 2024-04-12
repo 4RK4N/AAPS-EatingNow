@@ -480,8 +480,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     // TIRM - The TIR for the lower band just above normalTarget (+18/1.0)
     //var TIR_M_safety = (bg > normalTarget + 20 && delta >-4 && delta <= 4 && glucose_status.long_avgdelta >-4 && Math.min(DeltaPctS,DeltaPctL) > 1 ? TIR_M : 1); // SAFETY: when bg not falling too much or delta not slowing
     var TIR_M_safety = (bg > normalTarget + 18 && delta >-4 && delta <= 4 && glucose_status.long_avgdelta >-4 && DeltaPctS > 0 && DeltaPctL > 0 ? TIR_M : 1); // SAFETY: when bg not falling too much or delta not slowing
-    var TIR_max = (TIR_M_safety > 1 && meal_data.TIR_M_pct == 100) || (TIR_H_safety > 1 && meal_data.TIR_H_pct == 100); // when TIR is at max for the TIR band
-    var endebug = "TIR_max:" + TIR_max;
+//    var TIR_max = (TIR_M_safety > 1 && meal_data.TIR_M_pct == 100) || (TIR_H_safety > 1 && meal_data.TIR_H_pct == 100); // when TIR is at max for the TIR band
+//    var endebug = "TIR_max:" + TIR_max;
 
     // if we have low TIR data use it, else use max resistance data of B2 and B1
     //TIR_sens = (TIR_L < 1 ? TIR_L : Math.max(TIR_H_safety,TIR_M_safety) );
@@ -1813,7 +1813,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 //ENMaxSMB = (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) / (autosens_max / TIR_sens_limited);
                 //ENMaxSMB = profile.current_basal / 12 + (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
                 ENMaxSMB = (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
-                ENMaxSMB += (TIR_max ? profile.current_basal / 12 : 0); // when TIRS at max at basal 5m slice as SMB
+//                ENMaxSMB += (TIR_max ? profile.current_basal / 12 : 0); // when TIRS at max at basal 5m slice as SMB
                 ENMaxSMB = Math.min(ENMaxSMB, (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig));
             }
 
