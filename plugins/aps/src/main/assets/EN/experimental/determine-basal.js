@@ -486,6 +486,9 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     TIR_sens = (TIR_L < 1 && meal_data.TIR0_L_pct > 0 ? TIR_L : (TIR_H_safety + TIR_M_safety)/2 );
     if (TIR_sens == 0) TIR_sens = 1;
 
+    // Adjust TIR_sens by the profile switch when not 100% of ISF
+    if (!profile.scale_isf_profile && profile.percent !=100 && TIR_sens != 1) TIR_sens += profile.percent/100-1;
+
 //    var TIR_max = (TIR_M_safety > 1 && meal_data.TIR_M_pct == 100) || (TIR_H_safety > 1 && meal_data.TIR_H_pct == 100); // when TIR is at max for the TIR band
 //    var endebug = "TIR_max:" + TIR_max;
 
@@ -520,6 +523,12 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
     // ISF at normal target
     var sens_normalTarget = sens, sens_profile = sens; // use profile sens and keep profile sens with any SR
+//    var endebug = "ISF:"+convert_bg(sens_normalTarget, profile);
+
+    // Dont scale ISF with profile switch (optional)
+    if (!profile.scale_isf_profile && profile.percent !=100) sens_normalTarget *= profile.percent/100; // cancel adjustment from profile switch, use it with TIR_sens later
+//    var endebug += "="+convert_bg(sens_normalTarget, profile);
+
     enlog += "sens_normalTarget:" + convert_bg(sens_normalTarget, profile) + "\n";
 
     // MaxISF is the user defined limit for adjusted ISF based on a percentage of the current profile based ISF
@@ -577,11 +586,11 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         basal = profile.current_basal * sensitivityRatio;
     }
 
-    // Dont scale ISF with profile switch (optional)
-    if (!profile.scale_isf_profile && profile.percent !=100) {
-        if (profile.percent < 100 && meal_data.TIR0_L_pct == 0) sens_normalTarget *= profile.percent/100; // cancel adjustment if not sensitive when switch < 100%
-        if (profile.percent > 100 && meal_data.TIR0_H_pct == 0) sens_normalTarget *= profile.percent/100; // cancel adjustment if not resistant when switch > 100%
-    }
+//    // Dont scale ISF with profile switch (optional)
+//    if (!profile.scale_isf_profile && profile.percent !=100) {
+//        if (profile.percent < 100 && meal_data.TIR0_L_pct == 0) sens_normalTarget *= profile.percent/100; // cancel adjustment if not sensitive when switch < 100%
+//        if (profile.percent > 100 && meal_data.TIR0_H_pct == 0) sens_normalTarget *= profile.percent/100; // cancel adjustment if not resistant when switch > 100%
+//    }
 
     // apply TIRS to ISF only when delta is slight or bg higher
     if (TIR_sens_limited !=1 && TIR_sens !=1) {
