@@ -1279,6 +1279,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     //if (!ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && delta > -4 && delta <= 6 && glucose_status.long_avgdelta >-2 && glucose_status.long_avgdelta < 6 && eventualBG <= threshold && eventualBG >= -2 * bg) {
     //if (!ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && delta > -4 && delta <= 6 && glucose_status.long_avgdelta >-2 && glucose_status.long_avgdelta < 6 && (eventualBG <= threshold || sens_predType == "NA")) {
     if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && eventualBG >= -2 * bg && eventualBG <= threshold && sens_predType == "NA" && delta > -4 && delta <= 6) {
+        var endebug = "BG+";
         if (TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
     }
 
