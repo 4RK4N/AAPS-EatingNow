@@ -1247,9 +1247,14 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     //if (sens_predType == "NA" && TIR_sens_limited < 1 && bg < target_bg && bg < normalTarget && iob_data.iob <= 0) sens_predType = "IOB"; // if low IOB and no other prediction type is present
     if (sens_predType == "NA" && TIR_sens_limited < 1 && iob_data.iob <= 0) sens_predType = "IOB"; // if low IOB and no other prediction type is present
 
+    // BG+ outside of UAM prediction when resistant, lower range when asleep
+    if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && eventualBG >= -2 * bg && eventualBG <= threshold && sens_predType == "NA" && delta > -4 && delta <= 6) {
+        var endebug = "BG+";
+        if (TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
+    }
 
     // UAM+ predtype when sufficient delta not a COB prediction
-    if (profile.ENW_maxBolus_UAM_plus > 0 && (profile.EN_UAMPlusSMB_NoENW || profile.EN_UAMPlusTBR_NoENW || ENWindowOK) && ENtimeOK && delta >= 0 && sens_predType != "COB") {
+    if (profile.ENW_maxBolus_UAM_plus > 0 && (profile.EN_UAMPlusSMB_NoENW || profile.EN_UAMPlusTBR_NoENW || ENWindowOK) && ENtimeOK && delta >= 0 && (sens_predType == "UAM" || sens_predType == "NA")) {
         if (DeltaPctS > 1 && DeltaPctL > 1) sens_predType = "UAM+" // short & long average accelerated rise
         sens_predType = (ENWindowOK && delta > glucose_status.long_avgdelta && DeltaPctL > 1 ? "UAM+" : sens_predType); // when long average is still accelerated and delta is still higher
         sens_predType = (TIR_sens_limited > 1 && DeltaPctS > 1 ? "UAM+" : sens_predType); // any accelerated short delta with resistance outside of ENW
@@ -1271,11 +1276,11 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     // Pre-bolus condition matches set PB type when not accelerating
     if (UAMBGPreBolus && sens_predType != "UAM+") sens_predType = "PB";
 
-    // BG+ outside of UAM prediction when resistant, lower range when asleep
-    if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && eventualBG >= -2 * bg && eventualBG <= threshold && sens_predType == "NA" && delta > -4 && delta <= 6) {
-        var endebug = "BG+";
-        if (TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
-    }
+//    // BG+ outside of UAM prediction when resistant, lower range when asleep
+//    if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && eventualBG >= -2 * bg && eventualBG <= threshold && sens_predType == "NA" && delta > -4 && delta <= 6) {
+//        var endebug = "BG+";
+//        if (TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
+//    }
 
     // TBR for tt that isn't EN at normal target
     if (profile.temptargetSet && !ENTTActive && target_bg == normalTarget) sens_predType = "TBR";
