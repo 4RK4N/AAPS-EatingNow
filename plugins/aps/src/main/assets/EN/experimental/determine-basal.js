@@ -1801,11 +1801,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             // BG+ is the only EN prediction type allowed outside of ENW
             ENMaxSMB = (sens_predType == "BG+" ? Math.min(profile.EN_BGPlus_maxBolus,EN_NoENW_maxBolus) : ENMaxSMB);
             if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus > 0) {
-                //ENMaxSMB = profile.current_basal / 12 + (0.5 / TIR_sens_limited * (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig));
-                //ENMaxSMB = (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) / (autosens_max / TIR_sens_limited);
-                //ENMaxSMB = profile.current_basal / 12 + (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
-                ENMaxSMB = (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
-//                ENMaxSMB += (TIR_max ? profile.current_basal / 12 : 0); // when TIRS at max at basal 5m slice as SMB
+                //ENMaxSMB = (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
+                ENMaxSMB = Math.min(EN_NoENW_maxBolus,maxBolusOrig) * (profile.autosens_max - TIR_sens_limited) * profile.autosens_max; // use smallest SMB
                 ENMaxSMB = Math.min(ENMaxSMB, (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig));
             }
 
