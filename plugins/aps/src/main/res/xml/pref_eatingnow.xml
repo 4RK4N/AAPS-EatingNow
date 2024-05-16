@@ -664,6 +664,12 @@
                 validate:minNumber="0"
                 validate:testType="numericRange" />
 
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="en_tirs_always"
+                android:title="Use TIRS within Eating Window"
+                android:summary="By default ISF adjustments for resistance will not occur during ENW. Enabling this option will allow TIRS to adjust resistance at all times."/>
+
         </PreferenceCategory>
 
         <PreferenceCategory

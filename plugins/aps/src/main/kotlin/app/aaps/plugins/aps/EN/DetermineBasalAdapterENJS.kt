@@ -538,11 +538,13 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
 
         // TIR Windows - 3 hours
         val resistancePerHr = sp.getDouble(R.string.en_resistance_per_hour, 0.0)
-        this.profile.put("resistancePerHr", sp.getDouble(R.string.en_resistance_per_hour, 0.0))
+        this.profile.put("resistancePerHr", resistancePerHr)
+        val tirs_always = sp.getBoolean(R.string.en_tirs_always, false)
+        this.profile.put("tirs_always", tirs_always)
 
         if (resistancePerHr > 0) {
             var TIRStart = ENWStartTime + (ENWDuration * 60000)
-            if (now > TIRStart + (3 * 3600000)) TIRStart = now - (3 * 3600000) // if its been longer than 4h since ENW use current time as anchor
+            if (now > TIRStart + (3 * 3600000) || tirs_always) TIRStart = now - (3 * 3600000) // if its been longer than 4h since ENW use current time as anchor
             this.mealData.put("TIRStart", TIRStart)
             val TIRHrs = ((now - TIRStart).toDouble() / 3600000)
             // this.mealData.put("TIRHrs", TIRHrs)
