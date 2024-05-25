@@ -1801,9 +1801,11 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
             // BG+ is the only EN prediction type allowed outside of ENW
             if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus > 0) {
-                ENMaxSMB = Math.min(EN_NoENW_maxBolus,maxBolusOrig); // use smallest SMB
-                ENMaxSMB *=  (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
-                if (ENMaxSMB < profile.bolus_increment) ENMaxSMB = profile.current_basal / 12; // force smaller ENMaxSMB
+//                ENMaxSMB = Math.min(EN_NoENW_maxBolus,maxBolusOrig); // use smallest SMB
+//                ENMaxSMB *=  (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
+                ENMaxSMB = profile.EN_BGPlus_maxBolus;
+                if (TIR_sens_limited ==  profile.autosens_max) ENMaxSMB = Math.min(ENMaxSMB,profile.current_basal / 12); // force smaller ENMaxSMB for safety
+//                if (ENMaxSMB < profile.bolus_increment) ENMaxSMB = profile.current_basal / 12; // force smaller ENMaxSMB
             }
 
             // if ENMaxSMB is more than 0 use ENMaxSMB else use AAPS max minutes
