@@ -484,8 +484,9 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     TIR_M_safety = (TIR_H_safety > 1 ? TIR_M : TIR_M_safety); // SAFETY: when bg not falling too much or delta not slowing
 
     // if we have low TIR data use it, else use the average of the two TIR bands
-    // TIR_sens = (TIR_L < 1 && meal_data.TIR0_L_pct > 0 ? TIR_L : Math.max(TIR_H_safety,TIR_M_safety) );
-    TIR_sens = (TIR_L < 1 && meal_data.TIR0_L_pct > 0 ? TIR_L : (TIR_H_safety + TIR_M_safety)/2 );
+    if (TIR_M_safety > 1) TIR_sens = TIR_M_safety; // band 1
+    if (TIR_H_safety > 1) TIR_sens = Math.max(TIR_H_safety,TIR_M_safety); // band 2
+    if (TIR_L < 1 && meal_data.TIR0_L_pct > 0) TIR_sens = TIR_L; // override when low
     if (TIR_sens == 0) TIR_sens = 1;
 
     // Adjust TIR_sens by the profile switch when not 100% of ISF
