@@ -407,13 +407,13 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
 
         // get the TDD since ENW Start
         this.mealData.put("ENWStartTime", ENWStartTime)
-        var ENWBolusIOB = if (now < ENWStartTime+(8*3600000)) tddCalculator.calculate(ENWStartTime, now, allowMissingData = true)?.totalAmount else 0
-        var ENWBolusIOBnew = if (now < ENWStartTime+(8*3600000)) tddCalculator.calculateENWIOB(ENWStartTime, now, allowMissingData = true)?.totalAmount else 0
+        var ENWBolusIOB = if (now < ENWStartTime+(5*3600000)) tddCalculator.calculateENWIOB(ENWStartTime, now, allowMissingData = true)?.totalAmount else 0
+        var ENWBolusIOBold = if (now < ENWStartTime+(5*3600000)) tddCalculator.calculate(ENWStartTime, now, allowMissingData = true)?.totalAmount else 0
 
         if (ENWBolusIOB == null) ENWBolusIOB = 0
-        if (ENWBolusIOBnew == null) ENWBolusIOBnew = 0
+        if (ENWBolusIOBold == null) ENWBolusIOBold = 0
         this.mealData.put("ENWBolusIOB", ENWBolusIOB)
-        this.mealData.put("ENWBolusIOBnew", ENWBolusIOBnew)
+        this.mealData.put("ENWBolusIOBold", ENWBolusIOBold)
 
         // calculate the time that breakfast should be finished or ignored
         var EN_BkfstCutOffhr = sp.getInt(R.string.key_eatingnow_bkfstcutoff, 0) // cutoff pref
