@@ -1262,9 +1262,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     }
 
     // BG+ outside of UAM prediction when resistant, lower range when asleep
-    //if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && insulinReq_bg >= -1.5 * bg && insulinReq_bg <= threshold && delta > -4 && delta <= 6 && glucose_status.long_avgdelta > -4) {
     var endebug = "eBG:"+convert_bg(eventualBG,profile);
-    if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && insulinReq_bg >= -1.5 * bg && insulinReq_bg <= threshold && eventualBG < target_bg && delta > -4 && delta <= 6 && glucose_status.long_avgdelta > -4) {
+    if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && insulinReq_bg >= -1.5 * bg && insulinReq_bg <= threshold && minGuardBG >= -1.5 * bg && delta > -4 && delta <= 6 && glucose_status.long_avgdelta > -4) {
         if (sens_predType != "UAM+" && TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
     }
 
