@@ -496,8 +496,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 //    var endebug = "TIR_max:" + TIR_max;
 
 //    var endebug = "TIRStart:"+meal_data.TIRStart+",TIRHrs:"+meal_data.TIRHrs;
-    // apply autosens limit to TIR_sens_limited
-    TIR_sens_limited = Math.min(TIR_sens, profile.autosens_max);
+    // apply autosens limit to TIR_sens_limited with extra profile switch if using scale_isf_profile
+    TIR_sens_limited = Math.min(TIR_sens, profile.autosens_max + (!profile.scale_isf_profile && profile.percent > 100 ? profile.percent/100-1 : 0));
     TIR_sens_limited = Math.max(TIR_sens_limited, profile.autosens_min);
     // ******  END TIR_sens - a very simple implementation of autoISF configurable % per hour
 
