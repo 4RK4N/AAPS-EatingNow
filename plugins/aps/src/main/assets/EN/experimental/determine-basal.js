@@ -1248,7 +1248,10 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     //if (sens_predType == "NA" && TIR_sens_limited < 1 && bg < target_bg && bg < normalTarget && iob_data.iob <= 0) sens_predType = "IOB"; // if low IOB and no other prediction type is present
     if (sens_predType == "NA" && TIR_sens_limited < 1 && iob_data.iob <= 0) sens_predType = "IOB"; // if low IOB and no other prediction type is present
 
-
+    // Process BG+ first for slight delta when resistant, lower range when asleep
+    if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && (insulinReq_bg >= -1.5 * bg && insulinReq_bg <= threshold || minGuardBG >= -1.5 * bg && minGuardBG <= threshold) && delta > -4 && delta <= 6 && glucose_status.long_avgdelta > -4) {
+        if (TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
+    }
 
     // UAM+ predtype when sufficient delta not a COB prediction
     if (profile.ENW_maxBolus_UAM_plus > 0 && (profile.EN_UAMPlusSMB_NoENW || profile.EN_UAMPlusTBR_NoENW || ENWindowOK) && ENtimeOK && delta >= 0 && (sens_predType == "UAM" || sens_predType == "NA")) {
@@ -1259,12 +1262,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         if (meal_data.carbs && fractionCOBAbsorbed < 0.75) sens_predType = "UAM";
         // if there is no ENW and UAM+ triggered with EN_UAMPlusSMB_NoENW so formally enable the ENW to allow the larger SMB later
         if (sens_predType == "UAM+" && !ENWindowOK && profile.EN_UAMPlusSMB_NoENW) ENWindowOK = true;
-    }
-
-    // BG+ outside of UAM prediction when resistant, lower range when asleep
-    var endebug = "eBG:"+convert_bg(eventualBG,profile);
-    if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && insulinReq_bg >= -1.5 * bg && insulinReq_bg <= threshold && minGuardBG >= -1.5 * bg && delta > -4 && delta <= 6 && glucose_status.long_avgdelta > -4) {
-        if (sens_predType != "UAM+" && TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
     }
 
     // EN TT active and no bolus yet with UAM increase insulinReq_bg to provide initial bolus
@@ -1358,7 +1355,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             minGuardBG = threshold; // required to allow SMB consistently
             minBG = target_bg;
             eventualBG = bg;
-            eBGweight = (TIR_H_safety > 1 ? 1 : 0.5);
+            //eBGweight = (TIR_H_safety > 1 ? 1 : 0.5);
+            eBGweight = 1;
             insulinReq_sens_normalTarget = sens_normalTarget; // use the SR adjusted sens_normalTarget
             AllowZT = (profile.EN_BGPlus_maxBolus > 0); // AllowZT false when -1
         }
