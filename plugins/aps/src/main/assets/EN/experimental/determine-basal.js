@@ -1807,7 +1807,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 //                ENMaxSMB = Math.min(EN_NoENW_maxBolus,maxBolusOrig); // use smallest SMB
 //                ENMaxSMB *=  (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
                 ENMaxSMB = profile.EN_BGPlus_maxBolus;
-                if (TIR_sens > profile.autosens_max+(!profile.scale_isf_profile && profile.percent > 100 ? profile.percent/100-1 : 0)) ENMaxSMB = Math.min(ENMaxSMB,profile.current_basal / 12); // force smaller ENMaxSMB for safety
+                //if (TIR_sens > profile.autosens_max + (!profile.scale_isf_profile && profile.percent > 100 && TIR_sens != 1 ? profile.percent/100-1 : 0)) ENMaxSMB = Math.min(ENMaxSMB,profile.current_basal / 12); // force smaller ENMaxSMB for safety
+                if (TIR_sens > profile.autosens_max + (!profile.scale_isf_profile && profile.percent > 100 && TIR_sens != 1 ? profile.percent/100-1 : 0)) ENMaxSMB = profile.bolus_increment; // force smaller ENMaxSMB for safety
             }
 
             // if ENMaxSMB is more than 0 use ENMaxSMB else use AAPS max minutes
