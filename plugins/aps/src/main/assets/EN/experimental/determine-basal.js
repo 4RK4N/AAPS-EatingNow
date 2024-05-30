@@ -491,13 +491,14 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
     // Adjust TIR_sens by the profile switch when not 100% of ISF
     if (!profile.scale_isf_profile && profile.percent !=100 && TIR_sens != 1) TIR_sens += profile.percent/100-1;
+    var autosens_max_tirs = profile.autosens_max + (!profile.scale_isf_profile && profile.percent > 100 ? profile.percent/100-1 : 0);
 
 //    var TIR_max = (TIR_M_safety > 1 && meal_data.TIR_M_pct == 100) || (TIR_H_safety > 1 && meal_data.TIR_H_pct == 100); // when TIR is at max for the TIR band
 //    var endebug = "TIR_max:" + TIR_max;
 
 //    var endebug = "TIRStart:"+meal_data.TIRStart+",TIRHrs:"+meal_data.TIRHrs;
     // apply autosens limit to TIR_sens_limited with extra profile switch if using scale_isf_profile
-    TIR_sens_limited = Math.min(TIR_sens, profile.autosens_max + (!profile.scale_isf_profile && profile.percent > 100 ? profile.percent/100-1 : 0));
+    TIR_sens_limited = Math.min(TIR_sens, autosens_max_tirs);
     TIR_sens_limited = Math.max(TIR_sens_limited, profile.autosens_min);
     // ******  END TIR_sens - a very simple implementation of autoISF configurable % per hour
 
@@ -1439,8 +1440,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     rT.reason += (!ENWindowOK && ENWEndedAgo <= 240 ? " " + round(ENWindowDuration) + "m, " + round(ENWEndedAgo) + "m ago" : "");
     if (ENWIOBThreshU > 0)  rT.reason += " IOB" + (ENWTriggerOK ? "&gt;" : "&lt;") + round(ENWIOBThreshU, 2);
     if (meal_data.ENWBolusIOB || ENWindowOK) rT.reason += ", ENW-IOB:" + round(meal_data.ENWBolusIOB,2) + (ENWBolusIOBMax > 0 ? "/" + ENWBolusIOBMax : "") + "=" + round(carb_ratio*meal_data.ENWBolusIOB)+"g";
-    if (meal_data.ENWBolusIOBold || ENWindowOK) rT.reason += ", ENW-IOBold:" + round(meal_data.ENWBolusIOBold,2);
-
 
     // other EN stuff
     rT.reason += ", eBGw: " + sens_predType + " " + convert_bg(insulinReq_bg_orig, profile);
@@ -1807,8 +1806,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 //                ENMaxSMB = Math.min(EN_NoENW_maxBolus,maxBolusOrig); // use smallest SMB
 //                ENMaxSMB *=  (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
                 ENMaxSMB = profile.EN_BGPlus_maxBolus;
-                //if (TIR_sens > profile.autosens_max + (!profile.scale_isf_profile && profile.percent > 100 && TIR_sens != 1 ? profile.percent/100-1 : 0)) ENMaxSMB = Math.min(ENMaxSMB,profile.current_basal / 12); // force smaller ENMaxSMB for safety
-                if (TIR_sens > profile.autosens_max + (!profile.scale_isf_profile && profile.percent > 100 && TIR_sens != 1 ? profile.percent/100-1 : 0)) ENMaxSMB = profile.bolus_increment; // force smaller ENMaxSMB for safety
+                if (TIR_sens > autosens_max_tirs) ENMaxSMB = Math.max(profile.current_basal / 12,profile.bolus_increment); // force smaller ENMaxSMB for safety
             }
 
             // if ENMaxSMB is more than 0 use ENMaxSMB else use AAPS max minutes
