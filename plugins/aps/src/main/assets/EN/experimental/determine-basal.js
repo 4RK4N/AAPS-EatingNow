@@ -1800,11 +1800,11 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 //ENMaxSMB = profile.EN_NoENW_maxBolus;
                 //if (sens_predType == "UAM+" && profile.EN_UAMPlusTBR_NoENW) ENMaxSMB = -1; // TBR only
             }
-
-            // BG+ is the only EN prediction type allowed outside of ENW
-            if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus > 0) {
 //                ENMaxSMB = Math.min(EN_NoENW_maxBolus,maxBolusOrig); // use smallest SMB
 //                ENMaxSMB *=  (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
+            // BG+ is the only EN prediction type allowed outside of ENW
+            if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus > 0) {
+
                 ENMaxSMB = profile.EN_BGPlus_maxBolus;
                 if (TIR_sens > autosens_max_tirs) ENMaxSMB = Math.max(profile.current_basal / 12,profile.bolus_increment); // force smaller ENMaxSMB for safety
             }
