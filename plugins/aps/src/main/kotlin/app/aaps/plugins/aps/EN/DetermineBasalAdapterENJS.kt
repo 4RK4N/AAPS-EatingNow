@@ -283,7 +283,6 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
         val minCOB = sp.getInt(R.string.key_mincob, 0)
         this.profile.put("minCOB", minCOB)
         this.profile.put("allowENWovernight", sp.getBoolean(R.string.key_use_enw_overnight, false))
-        this.profile.put("ENWIOBTrigger", sp.getDouble(R.string.key_enwindowiob, 0.0))
         val enwMinBolus = sp.getDouble(R.string.key_enwminbolus, 0.0)
         this.profile.put("ENWMinBolus", enwMinBolus)
         this.profile.put("ENautostart", sp.getBoolean(R.string.key_enautostart, false))

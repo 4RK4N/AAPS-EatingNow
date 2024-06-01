@@ -387,8 +387,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     //console.error("CR:", );
     */
 
-    // ENWTriggerOK if there is enough IOB to trigger the EN window
-    var ENWindowOK = false, ENWStartedAgo = 0, ENWIOBThreshU = profile.ENWIOBTrigger, ENWTriggerOK = (ENactive && ENWIOBThreshU > 0 && (iob_data.iob > ENWIOBThreshU));
+    var ENWindowOK = false, ENWStartedAgo = 0;
 
     // breakfast/first meal related vars
     //var ENBkfstWindow = (profile.ENBkfstWindow == 0 ? profile.ENWindow : profile.ENBkfstWindow); // if breakfast window not set use ENW
@@ -410,7 +409,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     //var endebug = "ENWEndedAgo:" + round(ENWEndedAgo);
 
     // ENWindowOK is when there is a recent COB entry or manual bolus
-    ENWindowOK = (ENactive && ENWStartedAgo < ENWindowDuration || ENWTriggerOK);
+    ENWindowOK = (ENactive && ENWStartedAgo < ENWindowDuration);
 
     //var ENWBolusIOBMax = (firstMealWindow ? profile.ENW_breakfast_max_tdd : profile.ENW_max_tdd); // when EN started + breakfast window time is greater than the latest ENWstartTime there has been no other ENW so still firstmeal only
     var ENWBolusIOBMax = profile.ENW_maxIOB;
@@ -438,7 +437,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     enlog += "ENWindowOK:" + ENWindowOK + ", ENWStartedAgo:" + ENWStartedAgo + ", ENWindowDuration:" + ENWindowDuration + "\n";
     enlog += "ENTTActive:" + ENTTActive + "\n";
     enlog += "ENPBActive:" + ENPBActive + "\n";
-    enlog += "ENWIOBThreshU:" + ENWIOBThreshU + ", IOB:" + iob_data.iob + "\n";
     enlog += "MealScaler:" + MealScaler + "\n";
     enlog += "-----------------------" + "\n";
 
@@ -1438,7 +1436,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     rT.reason += (MealScaler > 1 ? " " + round(MealScaler*100) + "%" : "");
     rT.reason += (ENWindowOK && ENWStartedAgo <= ENWindowDuration ? " " + round(ENWStartedAgo) + "/" + ENWindowDuration + "m" : "");
     rT.reason += (!ENWindowOK && ENWEndedAgo <= 240 ? " " + round(ENWindowDuration) + "m, " + round(ENWEndedAgo) + "m ago" : "");
-    if (ENWIOBThreshU > 0)  rT.reason += " IOB" + (ENWTriggerOK ? "&gt;" : "&lt;") + round(ENWIOBThreshU, 2);
     if (meal_data.ENWBolusIOB || ENWindowOK) rT.reason += ", ENW-IOB:" + round(meal_data.ENWBolusIOB,2) + (ENWBolusIOBMax > 0 ? "/" + ENWBolusIOBMax : "") + "=" + round(carb_ratio*meal_data.ENWBolusIOB)+"g";
 
     // other EN stuff
