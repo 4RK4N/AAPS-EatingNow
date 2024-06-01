@@ -449,10 +449,6 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
             this.profile.put("ENW_maxIOB", if (activeENTT) sp.getDouble("ENdb_ENWIOBUnits", 0.0) else sp.getDouble(R.string.key_enw_max_tdd, 0.0))
         }
 
-        // 3PM is used as a low basal point at which the rest of the day leverages for ISF variance when using one ISF in the profile
-        this.profile.put("enableBasalAt3PM", sp.getBoolean(R.string.key_use_3pm_basal, false))
-        this.profile.put("BasalAt3PM", profile.getBasal(3600000*15+MidnightTime.calc(now)))
-
         // TDD related functions
         val enableSensTDD = sp.getBoolean(R.string.key_use_sens_tdd, false)
         this.profile.put("use_sens_TDD", enableSensTDD) // Override profile ISF with TDD ISF if selected in prefs

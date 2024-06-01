@@ -631,38 +631,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     }
     //NEW SR CODE
 
-    //circadian sensitivity curve
-    // https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3879757/
-    var circadian_sensitivity = 1;
-    if (nowdec >= 0 && nowdec < 2){
-        //circadian_sensitivity = 1.4;
-        circadian_sensitivity = (0.09130*Math.pow(nowdec,3))-(0.33261*Math.pow(nowdec,2))+1.4;
-    } else if (nowdec >= 2 && nowdec < 3){
-         //circadian_sensitivity = 0.8;
-         circadian_sensitivity = (0.0869*Math.pow(nowdec,3))-(0.05217*Math.pow(nowdec,2))-(0.23478*nowdec)+0.8;
-    } else if (nowdec >= 3 && nowdec < 8){
-         //circadian_sensitivity = 0.8;
-         circadian_sensitivity = (0.0007*Math.pow(nowdec,3))-(0.000730*Math.pow(nowdec,2))-(0.0007826*nowdec)+0.6;
-    } else if (nowdec >= 8 && nowdec < 11){
-         //circadian_sensitivity = 0.6;
-         circadian_sensitivity = (0.001244*Math.pow(nowdec,3))-(0.007619*Math.pow(nowdec,2))-(0.007826*nowdec)+0.4;
-    } else if (nowdec >= 11 && nowdec < 15){
-         //circadian_sensitivity = 0.8;
-         circadian_sensitivity = (0.00078*Math.pow(nowdec,3))-(0.00272*Math.pow(nowdec,2))-(0.07619*nowdec)+0.8;
-    } else if (nowdec >= 15 && nowdec <= 22){
-         circadian_sensitivity = 1.0;
-    } else if (nowdec >= 22 && nowdec <= 24){
-        //circadian_sensitivity = 1.2;
-        circadian_sensitivity = (0.000125*Math.pow(nowdec,3))-(0.0015*Math.pow(nowdec,2))-(0.0045*nowdec)+1.2;
-    }
-
-    // experimenting with basal rate from 3PM
-    var sens_circadian_now = (profile.enableBasalAt3PM ? round(profile.current_basal / profile.BasalAt3PM, 2) : 1);
-    enlog += "sens_circadian_now:" + sens_circadian_now + "\n";
-
-    // Apply circadian variance to ISF
-    sens_normalTarget *= sens_circadian_now;
-    enlog += "sens_normalTarget with circadian variance:" + convert_bg(sens_normalTarget, profile) + "\n";
 
     // Allow user preferences to adjust the scaling of ISF as BG increases
     // Scaling is converted to a percentage, 0 is normal scaling (1), 5 is 5% stronger (0.95) and -5 is 5% weaker (1.05)
