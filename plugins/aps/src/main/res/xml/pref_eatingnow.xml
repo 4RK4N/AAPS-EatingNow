@@ -234,7 +234,7 @@
             android:maxLines="20"
             android:selectAllOnFocus="true"
             android:title="@string/openapsama_max_daily_safety_multiplier"
-            validate:maxNumber="10"
+            validate:maxNumber="20"
             validate:minNumber="1"
             validate:testType="numericRange" />
 
@@ -248,7 +248,7 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="@string/openapsama_current_basal_safety_multiplier"
-            validate:floatmaxNumber="10"
+            validate:floatmaxNumber="20"
             validate:floatminNumber="1"
             validate:testType="floatNumericRange" />
 
@@ -503,7 +503,7 @@
                 android:inputType="numberDecimal"
                 android:key="@string/key_eatingnow_noenw_maxbolus"
                 android:title="Outside ENW maxBolus"
-                android:dialogMessage="maxBolus for BGL rises outside the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit and -1 will only disable SMB and use TBR only."
+                android:dialogMessage="maxBolus for BGL rises outside the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit and -1 will disable SMB and use TBR only."
                 validate:floatmaxNumber="200"
                 validate:floatminNumber="-1"
                 validate:testType="floatNumericRange"/>
