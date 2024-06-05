@@ -531,7 +531,7 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
         this.mealData.put("TDDLastUpdate", sp.getLong("TDDLastUpdate", 0))
         // }
 
-        // TIR Windows - 3 hours
+        // TIR Windows
         val resistancePerHr = sp.getDouble(R.string.en_resistance_per_hour, 0.0)
         this.profile.put("resistancePerHr", resistancePerHr)
         val tirs_always = sp.getBoolean(R.string.en_tirs_always, false)
@@ -539,7 +539,8 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
 
         if (resistancePerHr > 0) {
             var TIRStart = ENWStartTime + (ENWDuration * 60000)
-            if (now > TIRStart + (3 * 3600000) || tirs_always) TIRStart = now - (3 * 3600000) // if its been longer than 4h since ENW use current time as anchor
+            val TIRDuration = 2.0
+            if (now > TIRStart + (TIRDuration * 3600000) || tirs_always) TIRStart = (now - (TIRDuration * 3600000)).toLong() // if its been longer than 4h since ENW use current time as anchor
             this.mealData.put("TIRStart", TIRStart)
             val TIRHrs = ((now - TIRStart).toDouble() / 3600000)
             // this.mealData.put("TIRHrs", TIRHrs)
@@ -551,7 +552,7 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
             }
 
             // TIRB1 - lower band
-            tirCalculator.averageTIR(tirCalculator.calculateByTime(TIRStart,3.0,normalTargetBG-9.0, normalTargetBG + 18.0)).let { tir ->
+            tirCalculator.averageTIR(tirCalculator.calculateByTime(TIRStart,TIRDuration,normalTargetBG-9.0, normalTargetBG + 18.0)).let { tir ->
                 this.mealData.put("TIR_L_pct",tir.belowPct())
                 this.mealData.put("TIR_L",1 - ((TIRHrs * resistancePerHr / 100) * (tir.belowPct()/100)) )
                 this.mealData.put("TIR_M_pct",tir.abovePct())
@@ -559,7 +560,7 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
             }
 
             // TIRB2 - higher band
-            tirCalculator.averageTIR(tirCalculator.calculateByTime(TIRStart,3.0,72.0, normalTargetBG + 50.0)).let { tir ->
+            tirCalculator.averageTIR(tirCalculator.calculateByTime(TIRStart,TIRDuration,72.0, normalTargetBG + 50.0)).let { tir ->
                 this.mealData.put("TIR_H_pct",tir.abovePct())
                 this.mealData.put("TIR_H",1 + ((TIRHrs * resistancePerHr / 100) * (tir.abovePct()/100)) )
             }
