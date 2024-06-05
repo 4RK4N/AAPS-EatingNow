@@ -528,7 +528,10 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 //    var endebug = "ISF:"+convert_bg(sens_normalTarget, profile);
 
     // Dont scale ISF with profile switch (optional)
-    if (!profile.scale_isf_profile && profile.percent !=100) sens_normalTarget *= profile.percent/100; // cancel adjustment from profile switch, use it with TIR_sens later
+    if (!profile.scale_isf_profile && profile.percent !=100) {
+         sens_normalTarget *= profile.percent/100; // cancel adjustment from profile switch, use it with TIR_sens later
+         carb_ratio *= profile.percent/100; // cancel adjustment from profile switch, use it with TIR_sens later
+    }
 //    var endebug += "="+convert_bg(sens_normalTarget, profile);
 
     enlog += "sens_normalTarget:" + convert_bg(sens_normalTarget, profile) + "\n";
