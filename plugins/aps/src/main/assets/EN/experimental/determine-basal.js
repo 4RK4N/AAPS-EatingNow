@@ -1840,6 +1840,15 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
             microBolus = Math.min(microBolus,profile.safety_maxbolus); // reduce to safety maxbolus if required, displays SMB correctly and allows TBR to have the correct treatment remainder
 
+            // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
+            if (profile.EN_UseTBR_NoENW & !ENWindowOK) {
+                //rate = (microBolus == 0 ? maxBolusOrig : microBolus) * 12; // normal ENW SMB
+                rate = microBolus * 12; // normal ENW SMB
+                rate = round_basal(rate, profile);
+                microBolus = 0;
+            }
+
+
             // calculate a long enough zero temp to eventually correct back up to target
             var smbTarget = target_bg;
             worstCaseInsulinReq = (smbTarget - (naive_eventualBG + minIOBPredBG) / 2) / sens;
@@ -1941,12 +1950,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             if (sens_predType == "UAM+") MaxTBR = profile.ENW_maxBolus_UAM_plus; // UAM+ ENW SMB
             if (!ENWindowOK) MaxTBR = maxBolusOrig; // Safety SMB
             rate = (MaxTBR * 12) * insulinReqPct;
-            rate = round_basal(rate, profile);
-        }
-
-        // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
-        if (profile.EN_UseTBR_NoENW & !ENWindowOK) {
-            rate = (microBolus == 0 ? maxBolusOrig : microBolus) * 12; // normal ENW SMB
             rate = round_basal(rate, profile);
         }
 
