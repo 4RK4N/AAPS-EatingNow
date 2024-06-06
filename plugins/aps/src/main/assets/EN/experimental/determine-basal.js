@@ -1943,6 +1943,12 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             rate = round_basal(rate, profile);
         }
 
+        // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
+        if (profile.EN_UseTBR_NoENW & !ENWindowOK) {
+            rate = (microBolus == 0 ? maxBolusOrig : microBolus) * 12; // normal ENW SMB
+            rate = round_basal(rate, profile);
+        }
+
 //        // BG+ TBR restriction to EN_NoENW_maxBolus unless overnight
 //        if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus < 0) {
 //            var maxTBR = (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * 12;

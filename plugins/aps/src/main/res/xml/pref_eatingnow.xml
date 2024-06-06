@@ -513,10 +513,16 @@
                 android:inputType="numberDecimal"
                 android:key="@string/key_eatingnow_bgplus_maxbolus"
                 android:title="BG+ maxBolus"
-                android:dialogMessage="BG+ maxBolus for when there is resistance and BG is stuck higher than target.\n0 will disable, -1 will use TBR only and any other number will use SMB."
+                android:dialogMessage="BG+ maxBolus for when there is resistance and BG is stuck higher than target.\n0 will disable, -1 will use TBR only restricted to AAPS maxBolus and any other number will use SMB."
                 validate:floatmaxNumber="0.5"
                 validate:floatminNumber="-1"
                 validate:testType="floatNumericRange"/>
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="key_noenw_use_tbr"
+                android:title="Use TBR outside ENW"
+                android:summary="All treatments outside ENW will use TBR restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+)." />
 
         </PreferenceCategory>
 
