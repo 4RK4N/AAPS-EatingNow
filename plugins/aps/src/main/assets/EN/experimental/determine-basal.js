@@ -1216,7 +1216,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     // categorize the eventualBG prediction type for more accurate weighting
     if (lastUAMpredBG > 0 && eventualBG == lastUAMpredBG) sens_predType = "UAM"; // UAM prediction
     if (lastCOBpredBG > 0 && eventualBG == lastCOBpredBG) sens_predType = "COB"; // if COB prediction is present eventualBG aligns
-    //if (sens_predType == "NA" && TIR_sens_limited < 1 && bg < target_bg && bg < normalTarget && iob_data.iob <= 0) sens_predType = "IOB"; // if low IOB and no other prediction type is present
     if (sens_predType == "NA" && TIR_sens_limited < 1 && iob_data.iob <= 0) sens_predType = "IOB"; // if low IOB and no other prediction type is present
 
     // Process BG+ first for slight delta when resistant, lower range when asleep
@@ -1306,13 +1305,14 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
         // UAM predictions, no COB or GhostCOB
         if (sens_predType == "UAM" && (!COB || ignoreCOB)) {
+           // resistance detected
+           eBGweight = (TIR_sens_limited > 1 ? 0.35 : eBGweight); // allow more eBG within ENW or UAM+ inherited eBGw
+           insulinReq_sens_normalTarget = (TIR_sens_limited > 1 && !ENWindowOK ? sens_normalTarget : insulinReq_sens_normalTarget) ; // use the SR adjusted sens_normalTarget when no ENW and resistant
+
            eBGweight = (ENWindowOK ? 0.50 : eBGweight); // allow more eBG within ENW or UAM+ inherited eBGw
-           eBGweight = (TIR_H_safety > 1 ? 0.35 : eBGweight); // allow more eBG within ENW or UAM+ inherited eBGw
 
             // SAFETY: UAM fast delta with higher bg lowers eBGw
             eBGweight = (bg > ISFbgMax && delta >= 15 && ENWBolusIOBMax == 0 ? 0.30 : eBGweight);
-
-            insulinReq_sens_normalTarget = (TIR_sens_limited > 1 && !ENWindowOK ? sens_normalTarget : insulinReq_sens_normalTarget) ; // use the SR adjusted sens_normalTarget when no ENW and resistant
         }
 
         // COB predictions or UAM with COB
