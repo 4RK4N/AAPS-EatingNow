@@ -1226,7 +1226,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     // UAM+ predtype when sufficient delta not a COB prediction
     if (profile.ENW_maxBolus_UAM_plus > 0 && (profile.EN_UAMPlusSMB_NoENW || profile.EN_UAMPlusTBR_NoENW || ENWindowOK) && ENtimeOK && delta >= 0 && (sens_predType == "UAM" || sens_predType == "NA")) {
         if (DeltaPctS > 1 && DeltaPctL > 1) sens_predType = "UAM+" // short & long average accelerated rise
-        sens_predType = (ENWindowOK && delta > glucose_status.long_avgdelta && DeltaPctL > 1 ? "UAM+" : sens_predType); // when long average is still accelerated and delta is still higher
+        //sens_predType = (ENWindowOK && delta > glucose_status.long_avgdelta && DeltaPctL > 1 ? "UAM+" : sens_predType); // when long average is still accelerated and delta is still higher
         sens_predType = (TIR_sens_limited > 1 && DeltaPctS > 1 ? "UAM+" : sens_predType); // any accelerated short delta with resistance outside of ENW
         // reset to UAM prediction when COB are not mostly absorbed
         if (meal_data.carbs && fractionCOBAbsorbed < 0.75) sens_predType = "UAM";
