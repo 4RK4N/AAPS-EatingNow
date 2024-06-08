@@ -1234,6 +1234,9 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         if (sens_predType == "UAM+" && !ENWindowOK && profile.EN_UAMPlusSMB_NoENW) ENWindowOK = true;
     }
 
+    // EXPERIMENT: Use NA as BG+ when safe
+    if (profile.EN_BGPlus_maxBolus != 0 && TIR_sens_limited > 1 && !ENWindowOK && profile.EN_UseTBR_NoENW && sens_predType == "NA" && insulinReq_bg >= threshold && minGuardBG >= threshold) sens_predType = "BG+";
+
     // EN TT active and no bolus yet with UAM increase insulinReq_bg to provide initial bolus
     var UAMBGPreBolusUnits = profile.ENW_maxPreBolus, PBW = 30;
     // if UAMBGPreBolusUnits is more than AAPS max IOB then consider the setting to be minutes
