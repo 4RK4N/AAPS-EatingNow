@@ -465,8 +465,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     enlog += "insulinType is " + insulinType + ", ins_val is " + ins_val + ", ins_peak is " + ins_peak + "\n";
 
     // ******  TIR_sens - a very simple implementation of autoISF configurable % per hour
-    var TIR_L = 0, TIR_M = 0, TIR_H = 0, TIRH_percent = profile.resistancePerHr, TIR_sens = 0, TIR_sens_limited = 0;
-    if (TIRH_percent > 0) {
+    var TIR_L = 0, TIR_M = 0, TIR_H = 0, TIRS_percent = profile.resistancePerHr, TIR_sens = 0, TIR_sens_limited = 0;
+    if (TIRS_percent > 0) {
         TIR_L = meal_data.TIR_L;    // TIR_L - The TIR for the lowest band below normalTarget (-9/0.5)
         TIR_M = (!HighTempTargetSet ? meal_data.TIR_M : 0);
         TIR_H = (!HighTempTargetSet ? meal_data.TIR_H : 0);
@@ -603,7 +603,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         sens_normalTarget = sens_normalTarget / TIR_sens_limited;
     }
 
-    if (sensitivityRatio == 1 && TIRH_percent > 0) sensitivityRatio = TIR_sens_limited; // SR is TIRS if enabled
+    if (sensitivityRatio == 1 && TIRS_percent > 0) sensitivityRatio = TIR_sens_limited; // SR is TIRS if enabled
     sensitivityRatio = round(sensitivityRatio, 2);     // round SR
 
     basal = round_basal(basal, profile);
@@ -1426,7 +1426,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     if (profile.use_sens_LCTDD) rT.reason += ", LCTDD:" + round(meal_data.TDDLastCannula,2) + " " + (profile.sens_TDD_scale != 100 ? profile.sens_TDD_scale + "% " : "") + "(" + convert_bg(sens_LCTDD, profile) + ")";
     rT.reason += ", TDD7:" + round(meal_data.TDDAvg7d,2);
     if (profile.use_autosens) rT.reason += ", AS: " + round(autosens_data.ratio, 2);
-    if (TIRH_percent > 0) rT.reason += ", ISF@" + TIRH_percent + "%hr: " + round(TIR_sens*100) + (round(TIR_sens_limited*100) != round(TIR_sens*100) ? "=" + round(TIR_sens_limited*100) : "");
+    if (TIRS_percent > 0) rT.reason += ", ISF@" + TIRS_percent + "%hr: " + round(TIR_sens*100) + (round(TIR_sens_limited*100) != round(TIR_sens*100) ? "=" + round(TIR_sens_limited*100) : "");
     if (profile.enableSRTDD) rT.reason += ", Basal%: " + round(SR_TDD*100) + (round(sensitivityRatio*100) != round(SR_TDD*100) ? "=" + round(sensitivityRatio*100) : "");
     rT.reason += ", LGS: " + convert_bg(threshold, profile);
     rT.reason += ", LRT: " + round(60 * minAgo);
@@ -1783,7 +1783,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 //                ENMaxSMB *=  (profile.autosens_max - TIR_sens_limited) * profile.autosens_max;
             // BG+ is the only EN prediction type allowed outside of ENW
             if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus > 0) {
-
                 ENMaxSMB = profile.EN_BGPlus_maxBolus;
                 if (TIR_sens > autosens_max_tirs) ENMaxSMB = Math.max(profile.current_basal / 12,profile.bolus_increment); // force smaller ENMaxSMB for safety
             }
@@ -1809,7 +1808,12 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
             // ============== MAXBOLUS RESTRICTIONS ==============
             // if ENMaxSMB is more than AAPS max IOB then consider the setting to be minutes
-            if (ENMaxSMB > max_iob) ENMaxSMB = profile.current_basal * ENMaxSMB / 60;
+            var SMBinMins = false;
+            if (ENMaxSMB > max_iob) {
+                ENMaxSMB = profile.current_basal * ENMaxSMB / 60;
+                var SMBinMins = true;
+            }
+
             var roundSMBTo = 1 / profile.bolus_increment;
 
             // ============== TIME BASED RESTRICTIONS ==============
@@ -1847,6 +1851,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             if (profile.EN_UseTBR_NoENW & !ENWindowOK) {
                 //rate = (microBolus == 0 ? maxBolusOrig : microBolus) * 12; // normal ENW SMB
                 rate = microBolus * 12; // normal ENW SMB
+                if (SMBinMins) rate *= TIR_sens_limited;
+                if (TIR_sens >= 1 + TIRS_percent/100 * 2) rate = profile.current_basal; // when TIR is at max for the TIR band
                 rate = round_basal(rate, profile);
                 microBolus = 0;
             }

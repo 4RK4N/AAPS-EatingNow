@@ -514,7 +514,7 @@
                 android:key="@string/key_eatingnow_bgplus_maxbolus"
                 android:title="BG+ maxBolus"
                 android:dialogMessage="BG+ maxBolus for when there is resistance and BG is stuck higher than target.\n0 will disable, -1 will use TBR only restricted to AAPS maxBolus and any other number will use SMB."
-                validate:floatmaxNumber="0.5"
+                validate:floatmaxNumber="60"
                 validate:floatminNumber="-1"
                 validate:testType="floatNumericRange"/>
 
