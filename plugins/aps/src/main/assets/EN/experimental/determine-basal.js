@@ -1331,8 +1331,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             minGuardBG = threshold; // required to allow SMB consistently
             minBG = target_bg;
             eventualBG = bg;
-            //eBGweight = (TIR_H_safety > 1 ? 1 : 0.5);
-            eBGweight = 1;
+            eBGweight = (TIR_H_safety > 1 ? 1 : 0.5);
             insulinReq_sens_normalTarget = sens_normalTarget; // use the SR adjusted sens_normalTarget
             AllowZT = (profile.EN_BGPlus_maxBolus > 0); // AllowZT false when -1
         }
