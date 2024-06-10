@@ -1236,7 +1236,10 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     }
 
     // EXPERIMENT: Use NA as BG+ when safe
-    if (profile.EN_BGPlus_maxBolus != 0 && TIR_sens_limited > 1 && !ENWindowOK && profile.EN_UseTBR_NoENW && sens_predType == "NA" && insulinReq_bg >= threshold && minGuardBG >= threshold) sens_predType = "BG+";
+    if (profile.EN_BGPlus_maxBolus != 0 && TIR_sens_limited > 1 && !ENWindowOK && profile.EN_UseTBR_NoENW && sens_predType == "NA" && insulinReq_bg >= threshold && minGuardBG >= threshold && TIR_H_safety > 1) {
+        sens_predType = "BG+";
+        var endebug = "BG+ NA";
+    }
 
     // EN TT active and no bolus yet with UAM increase insulinReq_bg to provide initial bolus
     var UAMBGPreBolusUnits = profile.ENW_maxPreBolus, PBW = 30;
@@ -1252,7 +1255,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
 //    // BG+ outside of UAM prediction when resistant, lower range when asleep
 //    if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && eventualBG >= -2 * bg && eventualBG <= threshold && sens_predType == "NA" && delta > -4 && delta <= 6) {
-//        var endebug = "BG+";
 //        if (TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
 //    }
 
