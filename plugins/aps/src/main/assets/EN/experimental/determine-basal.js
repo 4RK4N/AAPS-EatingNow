@@ -1853,8 +1853,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             if (profile.EN_UseTBR_NoENW & !ENWindowOK) {
                 //rate = (microBolus == 0 ? maxBolusOrig : microBolus) * 12; // normal ENW SMB
                 rate = microBolus * 12; // normal ENW SMB
-                if (SMBinMins) rate *= TIR_sens_limited;
-                if (TIR_sens >= Math.min(autosens_max_tirs,1 + TIRS_percent/100 * 2) ) rate = profile.current_basal; // when TIR is at max for the TIR band
+                //if (SMBinMins) rate *= TIR_sens_limited;
+                if (sens_predType == "BG+" && TIR_sens >= Math.min(autosens_max_tirs,1 + TIRS_percent/100 * 2) ) rate = profile.current_basal; // when TIR is at max for the TIR band
                 rate = round_basal(rate, profile);
                 microBolus = 0; // set SMB to 0 as using TBR
                 ENMaxSMB = 0; // fix bug for later code if using -1
