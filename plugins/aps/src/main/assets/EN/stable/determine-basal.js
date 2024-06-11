@@ -1850,7 +1850,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             microBolus = Math.min(microBolus,profile.safety_maxbolus); // reduce to safety maxbolus if required, displays SMB correctly and allows TBR to have the correct treatment remainder
 
             // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
-            if (profile.EN_UseTBR_NoENW & !ENWindowOK) {
+            if (profile.EN_UseTBR_NoENW & !ENWindowOK && microBolus) {
                 //rate = (microBolus == 0 ? maxBolusOrig : microBolus) * 12; // normal ENW SMB
                 rate = microBolus * 12; // normal ENW SMB
                 //if (SMBinMins) rate *= TIR_sens_limited;
