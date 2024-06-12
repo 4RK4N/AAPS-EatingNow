@@ -1302,20 +1302,28 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 minBG = minPredBG; // go with the largest value for UAM+ outside ENW
                 // eventualBG = Math.min(eventualBG, eBGmax); // safety max of eBGmax
                 // when favouring minPredBG allow more of eventualBG if resistance detected
-                eBGweight = (eBGweight == 0 && ENtimeOK ? 0.5 : eBGweight); // if daytime allow more eBGw
+                //eBGweight = (eBGweight == 0 && ENtimeOK ? 0.5 : eBGweight); // if daytime allow more eBGw
             } else { // low delta but accelerating no LGS bypass
                 // when favouring minPredBG allow more of eventualBG if resistance detected
-                eBGweight = (eBGweight == 0 && ENtimeOK ? 0.5 : eBGweight); // if daytime allow more eBGw
+                //eBGweight = (eBGweight == 0 && ENtimeOK ? 0.5 : eBGweight); // if daytime allow more eBGw
+            }
+
+            // allow more eBG and use the SR adjusted sens_normalTarget with 30 minutes resistance
+            if (TIR_sens >= 1 + TIRS_percent / 200 && EN_UseTBR_NoENW) {
+                eBGweight = 1;
+                insulinReq_sens_normalTarget = sens_normalTarget;
             }
         }
 
         // UAM predictions, no COB or GhostCOB
         if (sens_predType == "UAM" && (!COB || ignoreCOB)) {
-           // resistance detected
-           eBGweight = (TIR_sens_limited > 1 ? 0.35 : eBGweight); // allow more eBG within ENW or UAM+ inherited eBGw
-           insulinReq_sens_normalTarget = (TIR_sens_limited > 1 && !ENWindowOK ? sens_normalTarget : insulinReq_sens_normalTarget) ; // use the SR adjusted sens_normalTarget when no ENW and resistant
+            // allow more eBG and use the SR adjusted sens_normalTarget with 30 minutes resistance
+            if (TIR_sens >= 1 + TIRS_percent / 200 && EN_UseTBR_NoENW) {
+                eBGweight = 1;
+                insulinReq_sens_normalTarget = sens_normalTarget;
+            }
 
-           eBGweight = (ENWindowOK ? 0.50 : eBGweight); // allow more eBG within ENW or UAM+ inherited eBGw
+           //eBGweight = (ENWindowOK ? 0.50 : eBGweight); // allow more eBG within ENW or UAM+ inherited eBGw
 
             // SAFETY: UAM fast delta with higher bg lowers eBGw
             eBGweight = (bg > ISFbgMax && delta >= 15 && ENWBolusIOBMax == 0 ? 0.30 : eBGweight);
