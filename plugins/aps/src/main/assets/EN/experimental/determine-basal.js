@@ -246,6 +246,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     var ENTTActive = meal_data.activeENTempTargetDuration > 0;
     var ENPBActive = (typeof meal_data.activeENPB == 'undefined' ? false : meal_data.activeENPB);
     var HighTempTargetSet = (!ENTTActive && profile.temptargetSet && target_bg > normalTarget);
+    var EN_UseTBR_NoENW = (profile.EN_UseTBR_NoENW & !ENWindowOK);
 
     // variables for deltas
     var delta = glucose_status.delta, DeltaPctS = 1, DeltaPctL = 1;
@@ -1236,7 +1237,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     }
 
     // EXPERIMENT: Use NA as BG+ when safe
-    if (profile.EN_BGPlus_maxBolus != 0 && TIR_sens_limited > 1 && !ENWindowOK && profile.EN_UseTBR_NoENW && sens_predType == "NA" && insulinReq_bg >= threshold && minGuardBG >= threshold && TIR_H_safety > 1) {
+    if (profile.EN_BGPlus_maxBolus != 0 && TIR_sens_limited > 1 && EN_UseTBR_NoENW && sens_predType == "NA" && insulinReq_bg >= threshold && minGuardBG >= threshold && TIR_H_safety > 1) {
         sens_predType = "BG+";
         var endebug = "BG+ NA";
     }
@@ -1689,16 +1690,13 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
         // override insulinReq for initial pre-bolus (PB) if there are more units left
         insulinReq = (UAMBGPreBolusUnitsLeft > 0 ? Math.max(insulinReq,UAMBGPreBolusUnitsLeft) : insulinReq);
-
         // if that would put us over max_iob, then reduce accordingly
-        if (insulinReq > max_iob - iob_data.iob) {
+        if (insulinReq > max_iob - iob_data.iob && !EN_UseTBR_NoENW) {
             rT.reason += "max_iob " + max_iob + ", ";
-            insulinReq = max_iob - iob_data.iob;
         } else if (max_iob_en > 0 && insulinReq > max_iob_en - iob_data.iob) {
             rT.reason += "max_iob_en " + max_iob_en + ", ";
             //insulinReq = max_iob_en - iob_data.iob;
         }
-
 
         // rate required to deliver insulinReq more insulin over 20m:
         rate = basal + (3 * insulinReq);
@@ -1845,13 +1843,16 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             microBolus = Math.min(microBolus,profile.safety_maxbolus); // reduce to safety maxbolus if required, displays SMB correctly and allows TBR to have the correct treatment remainder
 
             // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
-            if (profile.EN_UseTBR_NoENW & !ENWindowOK && microBolus) {
+            if (EN_UseTBR_NoENW && microBolus) {
                 rate = microBolus * 12; // normal ENW SMB
                 //if (SMBinMins) rate *= TIR_sens_limited;
                 if (sens_predType == "BG+" && TIR_sens >= Math.min(autosens_max_tirs,1 + TIRS_percent/100 * 2) ) rate = profile.current_basal; // when TIR is at max for the TIR band
                 rate = round_basal(rate, profile);
                 microBolus = 0; // set SMB to 0 as using TBR
                 ENMaxSMB = 0; // fix bug for later code if using -1
+
+                // maxIOB when using TBR code within SMB routine
+                if (iob_data.iob + rate / 12 >= max_iob) rate = (max_iob - iob_data.iob) * 12;
             }
 
 
