@@ -246,7 +246,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     var ENTTActive = meal_data.activeENTempTargetDuration > 0;
     var ENPBActive = (typeof meal_data.activeENPB == 'undefined' ? false : meal_data.activeENPB);
     var HighTempTargetSet = (!ENTTActive && profile.temptargetSet && target_bg > normalTarget);
-    var EN_UseTBR_NoENW = (profile.EN_UseTBR_NoENW & !ENWindowOK);
 
     // variables for deltas
     var delta = glucose_status.delta, DeltaPctS = 1, DeltaPctL = 1;
@@ -411,6 +410,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
     // ENWindowOK is when there is a recent COB entry or manual bolus
     ENWindowOK = (ENactive && ENWStartedAgo < ENWindowDuration);
+
+    var EN_UseTBR_NoENW = (profile.EN_UseTBR_NoENW & !ENWindowOK);
 
     //var ENWBolusIOBMax = (firstMealWindow ? profile.ENW_breakfast_max_tdd : profile.ENW_max_tdd); // when EN started + breakfast window time is greater than the latest ENWstartTime there has been no other ENW so still firstmeal only
     var ENWBolusIOBMax = profile.ENW_maxIOB;
