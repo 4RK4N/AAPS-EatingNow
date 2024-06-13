@@ -491,7 +491,13 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     if (TIR_sens == 0) TIR_sens = 1;
 
     // Adjust TIR_sens by the profile switch when not 100% of ISF
-    if (!profile.scale_isf_profile && profile.percent !=100 && TIR_sens > 1) TIR_sens *= profile.percent/100;
+    //if (!profile.scale_isf_profile && profile.percent !=100 && TIR_sens > 1) TIR_sens *= profile.percent/100;
+    if (!profile.scale_isf_profile && profile.percent !== 100 && TIR_sens !== 1) {
+        TIR_sens = TIR_sens > 1
+            ? (TIR_sens - 1) * profile.percent / 100 + 1
+            : TIR_sens * profile.percent / 100 + 1;
+    }
+
     //if (!profile.scale_isf_profile && profile.percent !=100 && TIR_sens > 1) TIR_sens += profile.percent/100-1;
     var autosens_max_tirs = profile.autosens_max + (!profile.scale_isf_profile && profile.percent > 100 ? profile.percent/100-1 : 0);
 
