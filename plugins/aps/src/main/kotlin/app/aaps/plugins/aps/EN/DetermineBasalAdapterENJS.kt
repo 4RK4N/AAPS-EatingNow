@@ -302,7 +302,7 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
         this.profile.put("EN_NoENW_maxBolus", sp.getDouble(R.string.key_eatingnow_noenw_maxbolus, 0.0))
         this.profile.put("EN_BGPlus_maxBolus", sp.getDouble(R.string.key_eatingnow_bgplus_maxbolus, 0.0))
 
-        this.profile.put("EN_UseTBR_NoENW", sp.getBoolean(R.string.key_noenw_use_tbr, false))
+        this.profile.put("EN_UseTBR_NoENTT", sp.getBoolean(R.string.key_noentt_use_tbr, false))
 
 //**********************************************************************************************************************************************
 

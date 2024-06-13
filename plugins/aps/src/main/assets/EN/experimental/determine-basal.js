@@ -246,6 +246,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     var ENTTActive = meal_data.activeENTempTargetDuration > 0;
     var ENPBActive = (typeof meal_data.activeENPB == 'undefined' ? false : meal_data.activeENPB);
     var HighTempTargetSet = (!ENTTActive && profile.temptargetSet && target_bg > normalTarget);
+    var EN_UseTBR_NoENTT = (profile.EN_UseTBR_NoENTT & !ENTTActive && !ENPBActive && !HighTempTargetSet);
+
 
     // variables for deltas
     var delta = glucose_status.delta, DeltaPctS = 1, DeltaPctL = 1;
@@ -410,8 +412,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
     // ENWindowOK is when there is a recent COB entry or manual bolus
     ENWindowOK = (ENactive && ENWStartedAgo < ENWindowDuration);
-
-    var EN_UseTBR_NoENW = (profile.EN_UseTBR_NoENW & !ENWindowOK);
 
     //var ENWBolusIOBMax = (firstMealWindow ? profile.ENW_breakfast_max_tdd : profile.ENW_max_tdd); // when EN started + breakfast window time is greater than the latest ENWstartTime there has been no other ENW so still firstmeal only
     var ENWBolusIOBMax = profile.ENW_maxIOB;
@@ -1244,7 +1244,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     }
 
     // EXPERIMENT: Use NA as BG+ when safe
-    if (profile.EN_BGPlus_maxBolus != 0 && TIR_sens_limited > 1 && EN_UseTBR_NoENW && sens_predType == "NA" && insulinReq_bg >= threshold && minGuardBG >= threshold && TIR_H_safety > 1) {
+    if (profile.EN_BGPlus_maxBolus != 0 && TIR_sens_limited > 1 && EN_UseTBR_NoENTT && sens_predType == "NA" && insulinReq_bg >= threshold && minGuardBG >= threshold && TIR_H_safety > 1) {
         sens_predType = "BG+";
         var endebug = "BG+ NA";
     }
@@ -1317,8 +1317,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             }
 
             // allow more eBG and use the SR adjusted sens_normalTarget with 30 minutes resistance
-            //if (TIR_sens >= 1 + TIRS_percent / 200 && EN_UseTBR_NoENW) {
-            if (TIR_sens > 1 && EN_UseTBR_NoENW) {
+            //if (TIR_sens >= 1 + TIRS_percent / 200 && EN_UseTBR_NoENTT) {
+            if (TIR_sens > 1 && EN_UseTBR_NoENTT) {
                 eBGweight = 1;
                 insulinReq_sens_normalTarget = sens_normalTarget;
             }
@@ -1327,8 +1327,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         // UAM predictions, no COB or GhostCOB
         if (sens_predType == "UAM" && (!COB || ignoreCOB)) {
             // allow more eBG and use the SR adjusted sens_normalTarget with 30 minutes resistance
-            //if (TIR_sens >= 1 + TIRS_percent / 200 && EN_UseTBR_NoENW) {
-            if (TIR_sens > 1 && EN_UseTBR_NoENW) {
+            //if (TIR_sens >= 1 + TIRS_percent / 200 && EN_UseTBR_NoENTT) {
+            if (TIR_sens > 1 && EN_UseTBR_NoENTT) {
                 eBGweight = 1;
                 insulinReq_sens_normalTarget = sens_normalTarget;
             }
@@ -1697,7 +1697,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         // override insulinReq for initial pre-bolus (PB) if there are more units left
         insulinReq = (UAMBGPreBolusUnitsLeft > 0 ? Math.max(insulinReq,UAMBGPreBolusUnitsLeft) : insulinReq);
         // if that would put us over max_iob, then reduce accordingly
-        if (insulinReq > max_iob - iob_data.iob && !EN_UseTBR_NoENW) {
+        if (insulinReq > max_iob - iob_data.iob && !EN_UseTBR_NoENTT) {
             rT.reason += "max_iob " + max_iob + ", ";
         } else if (max_iob_en > 0 && insulinReq > max_iob_en - iob_data.iob) {
             rT.reason += "max_iob_en " + max_iob_en + ", ";
@@ -1849,7 +1849,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             microBolus = Math.min(microBolus,profile.safety_maxbolus); // reduce to safety maxbolus if required, displays SMB correctly and allows TBR to have the correct treatment remainder
 
             // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
-            if (EN_UseTBR_NoENW && microBolus) {
+            if (EN_UseTBR_NoENTT && microBolus) {
                 rate = microBolus * 12; // normal ENW SMB
                 //if (SMBinMins) rate *= TIR_sens_limited;
                 if (sens_predType == "BG+" && TIR_sens >= Math.min(autosens_max_tirs,1 + TIRS_percent/100 * 2) ) rate = profile.current_basal; // when TIR is at max for the TIR band
