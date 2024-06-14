@@ -1350,7 +1350,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             eventualBG = bg;
             eBGweight = (TIR_H_safety > 1 ? 1 : 0.5);
             insulinReq_sens_normalTarget = sens_normalTarget; // use the SR adjusted sens_normalTarget
-            AllowZT = (profile.EN_BGPlus_maxBolus > 0); // AllowZT false when -1
         }
 
         // TBR only
@@ -1785,9 +1784,9 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             }
 
             // BG+ is the only EN prediction type allowed outside of ENW
-            if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus > 0) {
+            if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus != 0) {
                 ENMaxSMB = profile.EN_BGPlus_maxBolus;
-                if (TIR_sens > autosens_max_tirs) ENMaxSMB = Math.max(profile.current_basal / 12,profile.bolus_increment); // force smaller ENMaxSMB for safety
+                if (TIR_sens > autosens_max_tirs && profile.EN_BGPlus_maxBolus > 0) ENMaxSMB = Math.max(profile.current_basal / 12,profile.bolus_increment); // force smaller ENMaxSMB for safety
             }
 
             // if ENMaxSMB is more than 0 use ENMaxSMB else use AAPS max minutes
