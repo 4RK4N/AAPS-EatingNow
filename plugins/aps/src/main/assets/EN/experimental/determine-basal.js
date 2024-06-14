@@ -1320,7 +1320,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             //if (TIR_sens >= 1 + TIRS_percent / 200 && EN_UseTBR_NoENTT) {
             if (TIR_sens > 1 && EN_UseTBR_NoENTT) {
                 eBGweight = 1;
-                insulinReq_sens_normalTarget = sens_normalTarget;
+                //insulinReq_sens_normalTarget = sens_normalTarget;
             }
         }
 
@@ -1330,7 +1330,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             //if (TIR_sens >= 1 + TIRS_percent / 200 && EN_UseTBR_NoENTT) {
             if (TIR_sens > 1 && EN_UseTBR_NoENTT) {
                 eBGweight = 1;
-                insulinReq_sens_normalTarget = sens_normalTarget;
+                //insulinReq_sens_normalTarget = sens_normalTarget;
             }
             // SAFETY: UAM fast delta with higher bg lowers eBGw
             eBGweight = (bg > ISFbgMax && delta >= 15 && ENWBolusIOBMax == 0 ? 0.30 : eBGweight);
@@ -1349,7 +1349,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             minBG = target_bg;
             eventualBG = bg;
             eBGweight = (TIR_H_safety > 1 ? 1 : 0.5);
-            insulinReq_sens_normalTarget = sens_normalTarget; // use the SR adjusted sens_normalTarget
+            //insulinReq_sens_normalTarget = sens_normalTarget; // use the SR adjusted sens_normalTarget
         }
 
         // TBR only
@@ -1357,14 +1357,14 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             eBGweight = 1; // 100% eBGw as SMB is disabled
             // AllowZT = false;
             // When resistant and insulin delivery is restricted allow the SR adjusted sens_normalTarget
-            if (TIR_sens_limited > 1 && ENactive && MealScaler == 1) insulinReq_sens_normalTarget = sens_normalTarget;
+            //if (TIR_sens_limited > 1 && ENactive && MealScaler == 1) insulinReq_sens_normalTarget = sens_normalTarget;
         }
 
         // IOB prediction - 50% eBGw and eventualBG with negative IOB
         if (sens_predType == "IOB") {
             // When sensitive and below target with low IOB dont trust predictions and override eventualBG
             eventualBG = Math.min(eventualBG,bg);
-            insulinReq_sens_normalTarget = sens_normalTarget; // use the SR adjusted sens_normalTarget
+            //insulinReq_sens_normalTarget = sens_normalTarget; // use the SR adjusted sens_normalTarget
             eBGweight = 0.5; // use eBG between bg and minPredBG
         }
 
@@ -1375,12 +1375,13 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
         // when using DynISF
         if (profile.useDynISF) {
-            // insulinReq_sens determines the ISF used for final insulinReq calc, when ENW go with the predicted ISF
+            // insulinReq_sens determines the ISF used for final insulinReq calc based on original unadjusted ISF at normalTarget
+            // when ENtimeOK base prediction ISF using insulinReq_sens_normalTarget which may have been adjusted by TIRS
             // otherwise use the current BG ISF as DynISF is in use
-            insulinReq_sens = (ENWindowOK ? dynISF(insulinReq_bg,target_bg,insulinReq_sens_normalTarget,ins_val) : sens);
+            insulinReq_sens = (ENtimeOK ? dynISF(insulinReq_bg,target_bg,insulinReq_sens_normalTarget,ins_val) : sens);
 
             // when resistant use the stronger ISF
-            if (TIR_sens_limited > 1) insulinReq_sens = Math.min(dynISF(insulinReq_bg,target_bg,insulinReq_sens_normalTarget,ins_val), sens);
+            //if (TIR_sens_limited > 1) insulinReq_sens = Math.min(dynISF(insulinReq_bg,target_bg,insulinReq_sens_normalTarget,ins_val), sens);
         }
 
         // IOB prediction - 50% eBGw and eventualBG with negative IOB
