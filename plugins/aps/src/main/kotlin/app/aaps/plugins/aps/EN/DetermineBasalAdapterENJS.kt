@@ -344,7 +344,9 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
         var ENWStartTimeArray: Array<Long> = arrayOf() // Create array to contain last treatment times for ENW for today
         var ENStartedArray: Array<Long> = arrayOf() // Create array to contain first treatment times for ENStartTime for today
 
-        var lastENTempTargetEndTime: Long = 0 // Declare outside the block
+        var lastENTempTargetTime: Long // Declare outside the block
+        var lastENTempTargetEndTime: Long // Declare outside the block
+        var lastENTempTargetDuration: Int // Declare outside the block
 
         // get the FIRST and LAST ENTempTarget time since EN activation
         repository.getENTemporaryTargetDataFromTimetoTime(ENStartTime,now,true).blockingGet().let { ENTempTarget ->
@@ -352,11 +354,11 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
             this.mealData.put("firstENTempTargetTime",firstENTempTargetTime)
             if (firstENTempTargetTime >0) ENStartedArray += firstENTempTargetTime
 
-            val lastENTempTargetTime = with(ENTempTarget.lastOrNull()?.timestamp) { this ?: 0 }
+            lastENTempTargetTime = with(ENTempTarget.lastOrNull()?.timestamp) { this ?: 0 }
             this.mealData.put("lastENTempTargetTime",lastENTempTargetTime)
             ENWStartTimeArray += lastENTempTargetTime
 
-            val lastENTempTargetDuration = with(ENTempTarget.lastOrNull()?.duration) { this ?: 0 }
+            lastENTempTargetDuration = with(ENTempTarget.lastOrNull()?.duration) { this ?: 0 }.toInt()
             this.mealData.put("lastENTempTargetDuration",lastENTempTargetDuration/60000)
 
             lastENTempTargetEndTime = lastENTempTargetTime + lastENTempTargetDuration
@@ -406,7 +408,6 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
         val ENWStartTime = if (ENWStartTimeArray.isNotEmpty()) ENWStartTimeArray.max() else 0 // get the maximum (latest) time from the array or make it 0
         var ENWDuration = 0
 
-
         // get the TDD since ENW Start
         this.mealData.put("ENWStartTime", ENWStartTime)
         var ENWBolusIOB = if (now < ENWStartTime+(5*3600000)) tddCalculator.calculateENWIOB(ENWStartTime, now, allowMissingData = true)?.totalAmount else 0
@@ -428,6 +429,7 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
         if (firstMealWindow) {
             // Breakfast profile
             ENWDuration = sp.getInt(R.string.key_enbkfstwindowminutes, 0)
+            ENWDuration = (if (lastENTempTargetTime == ENWStartTime) lastENTempTargetDuration / 60000 else ENWDuration)
             this.profile.put("ENWDuration",ENWDuration) // ENBkfstWindow
             this.profile.put("MealPct", sp.getInt(R.string.key_eatingnow_breakfastpct, 100)) // meal scaling - BreakfastPct
             this.profile.put("ENW_maxBolus_COB", sp.getDouble(R.string.key_eatingnow_cobboost_maxbolus_breakfast, 0.0)) // EN_COB_maxBolus_breakfast
@@ -441,6 +443,7 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
         } else {
             // Subsequent meals profile
             ENWDuration = sp.getInt(R.string.key_eatingnow_enwindowminutes, 0)
+            ENWDuration = (if (lastENTempTargetTime == ENWStartTime) lastENTempTargetDuration / 60000 else ENWDuration)
             this.profile.put("ENWDuration",ENWDuration ) // ENWindow
             this.profile.put("MealPct", sp.getInt(R.string.key_eatingnow_pct, 100)) // meal scaling - ENWPct
             this.profile.put("ENW_maxBolus_COB", sp.getDouble(R.string.key_eatingnow_cobboost_maxbolus, 0.0)) //EN_COB_maxBolus

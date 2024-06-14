@@ -403,7 +403,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     //var ENWDuration_profile = profile.ENWDuration;
     var ENWindowDuration = profile.ENWDuration;
     // when the TT was the last trigger for ENW use the duration of the last EN TT
-    ENWindowDuration = (meal_data.lastENTempTargetTime == meal_data.ENWStartTime ? meal_data.lastENTempTargetDuration : ENWindowDuration);
+    // ENWindowDuration = (meal_data.lastENTempTargetTime == meal_data.ENWStartTime ? meal_data.lastENTempTargetDuration : ENWindowDuration); // relocated to DetermineBasalAdapterENJS
 
     // set the ENW time since started and ended
     ENWStartedAgo = (nowUTC - (firstMealWindow ? meal_data.ENStartedTime : meal_data.ENWStartTime)) / 60000;
