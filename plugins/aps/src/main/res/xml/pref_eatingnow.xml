@@ -464,49 +464,9 @@
             </androidx.preference.PreferenceScreen>
 
             <androidx.preference.PreferenceScreen
-                android:key="enw_advanced"
-                android:title="ENW Advanced Settings"
-                android:summary="Advanced Settings for EN Windows.">
-
-                <app.aaps.core.validators.ValidatingEditTextPreference
-                    android:defaultValue="0"
-                    android:inputType="numberDecimal"
-                    android:key="@string/key_enwminbolus"
-                    android:title="EN Window Min Bolus"
-                    android:dialogMessage="EN Window will not be activated with boluses below this amount."
-                    validate:floatmaxNumber="10"
-                    validate:floatminNumber="0"
-                    validate:testType="floatNumericRange"/>
-
-                <SwitchPreference
-                    android:defaultValue="false"
-                    android:key="key_use_enw_overnight"
-                    android:title="Allow ENW Overnight"
-                    android:summary="ENW will be active after EN End Time with COB or EN-TT." />
-
-                <SwitchPreference
-                    android:defaultValue="false"
-                    android:key="key_use_ghostcob_always"
-                    android:title="Use GhostCOB always"
-                    android:summary="Always ignore COB predictions and rely solely on UAM. ENW will still be activated if COB entry is above Min COB Limit below." />
-
-                <SwitchPreference
-                    android:dependency="key_use_ghostcob_always"
-                    android:defaultValue="false"
-                    android:key="key_use_ghostcob"
-                    android:title="Use GhostCOB after ENW"
-                    android:summary="Ignore COB after EN Window finished and rely on UAM predictions. Can help with lingering carbs." />
-
-                <app.aaps.core.validators.ValidatingEditTextPreference
-                    android:defaultValue="0"
-                    android:digits="0123456789"
-                    android:inputType="number"
-                    android:key="key_mincob"
-                    android:title="Min COB Limit"
-                    android:dialogMessage="COB entries at or below this value will not trigger EN Window."
-                    validate:maxNumber="100"
-                    validate:minNumber="0"
-                    validate:testType="numericRange" />
+                android:key="outside_enw"
+                android:title="Outside ENW Settings"
+                android:summary="Settings not applicable for EN Windows.">
 
                 <app.aaps.core.validators.ValidatingEditTextPreference
                     android:defaultValue="0"
@@ -518,21 +478,117 @@
                     validate:floatminNumber="-1"
                     validate:testType="floatNumericRange"/>
 
-                <app.aaps.core.validators.ValidatingEditTextPreference
-                    android:defaultValue="0"
-                    android:inputType="numberDecimal"
-                    android:key="@string/key_eatingnow_bgplus_maxbolus"
-                    android:title="BG+ maxBolus"
-                    android:dialogMessage="BG+ maxBolus for when there is resistance and BG is stuck higher than target.\n0 will disable, -1 will use TBR only restricted to AAPS maxBolus and any other number will use SMB."
-                    validate:floatmaxNumber="60"
-                    validate:floatminNumber="-1"
-                    validate:testType="floatNumericRange"/>
-
                 <SwitchPreference
                     android:defaultValue="false"
                     android:key="key_noentt_use_tbr"
                     android:title="Disable SMB outside EN-TT"
                     android:summary="All treatments outside of an Eating Now temptarget will disable SMB and use TBR restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+). Other temptargets will not be impacted." />
+
+                <androidx.preference.PreferenceScreen
+                    android:key="outside_enw_sens"
+                    android:title="Sensitivity and Resistance Settings"
+                    android:summary="Settings to assist with time in range.">
+
+                    <app.aaps.core.validators.ValidatingEditTextPreference
+                        android:defaultValue="0"
+                        android:inputType="number"
+                        android:title="TIRS % resistance per hour"
+                        android:key="@string/en_resistance_per_hour"
+                        android:dialogMessage="ISF will become stronger every loop iteration when bg is high. This will set Maximum resistance per hour in percentage. MaxISF is respected."
+                        validate:maxNumber="25"
+                        validate:minNumber="0"
+                        validate:testType="numericRange" />
+
+                    <SwitchPreference
+                        android:defaultValue="false"
+                        android:key="en_tirs_always"
+                        android:title="Use TIRS within Eating Window"
+                        android:summary="By default ISF adjustments for resistance will not occur during ENW. Enabling this option will allow TIRS to adjust resistance at all times."/>
+
+                    <app.aaps.core.validators.ValidatingEditTextPreference
+                        android:defaultValue="0"
+                        android:inputType="numberDecimal"
+                        android:key="@string/key_eatingnow_bgplus_maxbolus"
+                        android:title="BG+ maxBolus"
+                        android:dialogMessage="BG+ maxBolus for when there is resistance and BG is stuck higher than target.\n0 will disable, -1 will use TBR only restricted to AAPS maxBolus and any other number will use SMB."
+                        validate:floatmaxNumber="60"
+                        validate:floatminNumber="-1"
+                        validate:testType="floatNumericRange"/>
+
+                </androidx.preference.PreferenceScreen>
+
+        </androidx.preference.PreferenceScreen>
+
+        <androidx.preference.PreferenceScreen
+            android:key="enw_advanced"
+            android:title="ENW Advanced Settings"
+            android:summary="Advanced Settings for EN Windows.">
+
+            <app.aaps.core.validators.ValidatingEditTextPreference
+                android:defaultValue="0"
+                android:inputType="numberDecimal"
+                android:key="@string/key_enwminbolus"
+                android:title="EN Window Min Bolus"
+                android:dialogMessage="EN Window will not be activated with boluses below this amount."
+                validate:floatmaxNumber="10"
+                validate:floatminNumber="0"
+                validate:testType="floatNumericRange"/>
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="key_use_enw_overnight"
+                android:title="Allow ENW Overnight"
+                android:summary="ENW will be active after EN End Time with COB or EN-TT." />
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="key_use_ghostcob_always"
+                android:title="Use GhostCOB always"
+                android:summary="Always ignore COB predictions and rely solely on UAM. ENW will still be activated if COB entry is above Min COB Limit below." />
+
+            <SwitchPreference
+                android:dependency="key_use_ghostcob_always"
+                android:defaultValue="false"
+                android:key="key_use_ghostcob"
+                android:title="Use GhostCOB after ENW"
+                android:summary="Ignore COB after EN Window finished and rely on UAM predictions. Can help with lingering carbs." />
+
+            <app.aaps.core.validators.ValidatingEditTextPreference
+                android:defaultValue="0"
+                android:digits="0123456789"
+                android:inputType="number"
+                android:key="key_mincob"
+                android:title="Min COB Limit"
+                android:dialogMessage="COB entries at or below this value will not trigger EN Window."
+                validate:maxNumber="100"
+                validate:minNumber="0"
+                validate:testType="numericRange" />
+
+            <app.aaps.core.validators.ValidatingEditTextPreference
+                android:defaultValue="0"
+                android:inputType="numberDecimal"
+                android:key="@string/key_eatingnow_noenw_maxbolus"
+                android:title="Outside ENW maxBolus"
+                android:dialogMessage="maxBolus for BGL rises outside the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit and -1 will disable SMB and use TBR only."
+                validate:floatmaxNumber="200"
+                validate:floatminNumber="-1"
+                validate:testType="floatNumericRange"/>
+
+            <app.aaps.core.validators.ValidatingEditTextPreference
+                android:defaultValue="0"
+                android:inputType="numberDecimal"
+                android:key="@string/key_eatingnow_bgplus_maxbolus"
+                android:title="BG+ maxBolus"
+                android:dialogMessage="BG+ maxBolus for when there is resistance and BG is stuck higher than target.\n0 will disable, -1 will use TBR only restricted to AAPS maxBolus and any other number will use SMB."
+                validate:floatmaxNumber="60"
+                validate:floatminNumber="-1"
+                validate:testType="floatNumericRange"/>
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="key_noentt_use_tbr"
+                android:title="Disable SMB outside EN-TT"
+                android:summary="All treatments outside of an Eating Now temptarget will disable SMB and use TBR restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+). Other temptargets will not be impacted." />
 
         </androidx.preference.PreferenceScreen>
 
@@ -665,22 +721,6 @@
                 android:key="key_use_sr_tdd"
                 android:title="Use TDD based SensitivityRatio"
                 android:summary="Use recent TDD history to calculate current SensitivityRatio. Used for basal only. Min/Max Autosens values will be respected."/>
-
-            <app.aaps.core.validators.ValidatingEditTextPreference
-                android:defaultValue="0"
-                android:inputType="number"
-                android:title="TIRS % resistance per hour"
-                android:key="@string/en_resistance_per_hour"
-                android:dialogMessage="ISF will become stronger every loop iteration when bg is high. This will set Maximum resistance per hour in percentage. MaxISF is respected."
-                validate:maxNumber="25"
-                validate:minNumber="0"
-                validate:testType="numericRange" />
-
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="en_tirs_always"
-                android:title="Use TIRS within Eating Window"
-                android:summary="By default ISF adjustments for resistance will not occur during ENW. Enabling this option will allow TIRS to adjust resistance at all times."/>
 
         </PreferenceCategory>
 
