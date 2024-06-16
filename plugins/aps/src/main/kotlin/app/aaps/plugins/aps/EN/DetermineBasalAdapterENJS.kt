@@ -296,7 +296,6 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
         this.profile.put("percent", if (profile is ProfileSealed.EPS) profile.value.originalPercentage else 100)
 
         this.profile.put("EN_UAMPlusSMB_NoENW", sp.getBoolean(R.string.key_use_uamplus_noenw, false))
-        this.profile.put("EN_UAMPlusTBR_NoENW", sp.getBoolean(R.string.key_use_uamplustbr_noenw, false))
 
         this.profile.put("EN_NoENW_maxBolus", sp.getDouble(R.string.key_eatingnow_noenw_maxbolus, 0.0))
         this.profile.put("EN_BGPlus_maxBolus", sp.getDouble(R.string.key_eatingnow_bgplus_maxbolus, 0.0))
