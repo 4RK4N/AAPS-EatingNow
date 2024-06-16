@@ -548,30 +548,10 @@
             <app.aaps.core.validators.ValidatingEditTextPreference
                 android:defaultValue="0"
                 android:inputType="numberDecimal"
-                android:key="@string/key_eatingnow_uambgboost_maxbolus_bkfast"
-                android:title="UAM+ Breakfast PreBolus"
-                android:dialogMessage="UAM+ Breakfast PreBolus within the EN-TT Window only."
-                validate:floatmaxNumber="15"
-                validate:floatminNumber="0"
-                validate:testType="floatNumericRange"/>
-
-            <app.aaps.core.validators.ValidatingEditTextPreference
-                android:defaultValue="0"
-                android:inputType="numberDecimal"
                 android:key="@string/key_eatingnow_uamplus_maxbolus_bkfast"
                 android:title="UAM+ Breakfast maxBolus"
                 android:dialogMessage="UAM+ Breakfast maxBolus for accelerated UAM BG rise.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will disable UAM+ and fallback to usual UAM prediction."
                 validate:floatmaxNumber="200"
-                validate:floatminNumber="0"
-                validate:testType="floatNumericRange"/>
-
-            <app.aaps.core.validators.ValidatingEditTextPreference
-                android:defaultValue="0"
-                android:inputType="numberDecimal"
-                android:key="@string/key_eatingnow_uambgboost_maxbolus"
-                android:title="UAM+ PreBolus"
-                android:dialogMessage="UAM+ PreBolus within the EN-TT Window only."
-                validate:floatmaxNumber="15"
                 validate:floatminNumber="0"
                 validate:testType="floatNumericRange"/>
 
@@ -584,6 +564,36 @@
                 validate:floatmaxNumber="200"
                 validate:floatminNumber="0"
                 validate:testType="floatNumericRange"/>
+
+            <androidx.preference.PreferenceScreen
+                android:key="prebolus_settings"
+                android:title="PreBolus Settings">
+
+                <Preference
+                    android:title="PreBolus Settings"
+                    android:summary="An optional prebolus may be given at the start of the Eating Now temp target."></Preference>
+
+                <app.aaps.core.validators.ValidatingEditTextPreference
+                    android:defaultValue="0"
+                    android:inputType="numberDecimal"
+                    android:key="@string/key_eatingnow_uambgboost_maxbolus_bkfast"
+                    android:title="PreBolus for Breakfast"
+                    android:dialogMessage="PreBolus for breakfast within the EN-TT Window only."
+                    validate:floatmaxNumber="15"
+                    validate:floatminNumber="0"
+                    validate:testType="floatNumericRange"/>
+
+                <app.aaps.core.validators.ValidatingEditTextPreference
+                    android:defaultValue="0"
+                    android:inputType="numberDecimal"
+                    android:key="@string/key_eatingnow_uambgboost_maxbolus"
+                    android:title="PreBolus for other meals"
+                    android:dialogMessage="PreBolus for other meals within the EN-TT Window only."
+                    validate:floatmaxNumber="15"
+                    validate:floatminNumber="0"
+                    validate:testType="floatNumericRange"/>
+
+            </androidx.preference.PreferenceScreen>
 
             <androidx.preference.PreferenceScreen
                 android:key="uamplus_advanced"
@@ -601,7 +611,7 @@
         </PreferenceCategory>
 
         <PreferenceCategory
-            android:title="Eating Now: ISF"
+            android:title="ISF Settings"
             android:summary="ISF related settings."
             app:initialExpandedChildrenCount="0">
 
@@ -612,6 +622,7 @@
                 android:summary="As BG increases ISF will become stronger when enabled." />
 
             <app.aaps.core.validators.ValidatingEditTextPreference
+                android:dependency="key_use_dynamicISF"
                 android:defaultValue="0"
                 android:inputType="numberDecimal"
                 android:key="@string/key_eatingnow_isfbgscaler"
@@ -625,9 +636,10 @@
                 android:defaultValue="false"
                 android:key="key_use_sens_tdd"
                 android:title="Use TDD for ISF"
-                android:summary="Use TDD as the basis for calculating the current ISF. This will override the profile ISF." />
+                android:summary="Use TDD as the basis for calculating the ISF at target. This will override the profile ISF." />
 
             <app.aaps.core.validators.ValidatingEditTextPreference
+                android:dependency="key_use_sens_tdd"
                 android:defaultValue="100"
                 android:inputType="numberDecimal"
                 android:key="@string/key_sens_tdd_scale"
@@ -638,6 +650,7 @@
                 validate:testType="floatNumericRange"/>
 
             <app.aaps.core.validators.ValidatingEditTextPreference
+                android:dependency="key_use_sens_tdd"
                 android:defaultValue="100"
                 android:inputType="number"
                 android:title="MaxISF %"
