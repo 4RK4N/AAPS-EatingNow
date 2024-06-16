@@ -302,16 +302,6 @@
             <Preference android:summary="SMB's can be restricted inside and outside of the Eating Now time range.">
             </Preference>
 
-            <app.aaps.core.validators.ValidatingEditTextPreference
-                android:defaultValue="0"
-                android:inputType="numberDecimal"
-                android:title="Daytime SMB Restriction"
-                android:key="@string/key_eatingnow_smbbgoffset_day"
-                android:dialogMessage="There will be no SMB when below this BG offset during the day unless COB or a TT lower or equal to normalTarget\ne.g. if normalTarget is 5.5 (99) and this setting is 1.5 (27) there will be no SMB below 7.0 (126)"
-                validate:floatmaxNumber="270.0"
-                validate:floatminNumber="0"
-                validate:testType="floatNumericRange" />
-
              <app.aaps.core.validators.ValidatingEditTextPreference
                 android:defaultValue="0"
                 android:inputType="numberDecimal"

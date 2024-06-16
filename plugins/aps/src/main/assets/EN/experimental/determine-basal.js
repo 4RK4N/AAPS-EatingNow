@@ -444,13 +444,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
     // Thresholds for no SMB's
     var SMBbgOffset_night = (profile.SMBbgOffset > 0 ? target_bg + profile.SMBbgOffset : 0);
-    var SMBbgOffset_day = (profile.SMBbgOffset_day > 0 ? target_bg + profile.SMBbgOffset_day : 0);
-
     var ENSleepModeNoSMB = !ENactive && !ENtimeOK && bg < SMBbgOffset_night;
-    var ENDayModeNoSMB = ENactive && ENtimeOK && !ENWindowOK && bg < SMBbgOffset_day;
-
     enlog += "SMBbgOffset_night:" + SMBbgOffset_night + "\n";
-    enlog += "SMBbgOffset_day:" + SMBbgOffset_day + "\n";
 
     var COB = meal_data.mealCOB;
 
@@ -1870,7 +1865,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             if (!AllowZT) durationReq = 0;
 
             // TBR only when below respective SMBbgOffsets with no low TT / no COB
-            if (ENSleepModeNoSMB || ENDayModeNoSMB) {
+            if (ENSleepModeNoSMB) {
                 microBolus = 0;
             }
 
@@ -1892,7 +1887,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 durationReq = 30;
             }
             rT.reason += " insulinReq" + (UAMBGPreBolus ? "+ " : " ") + insulinReq + (insulinReq != insulinReqOrig ? "(" + insulinReqOrig + ")" : "") + "@" + round(insulinReqPct * 100, 0) + "%";
-            if (ENSleepModeNoSMB || ENDayModeNoSMB) rT.reason += "; No SMB < " + convert_bg( (ENSleepModeNoSMB ? SMBbgOffset_night : SMBbgOffset_day) , profile);
+            if (ENSleepModeNoSMB) rT.reason += "; No SMB < " + convert_bg(SMBbgOffset_night, profile);
 
             /*
             if (microBolus >= maxBolus) {
