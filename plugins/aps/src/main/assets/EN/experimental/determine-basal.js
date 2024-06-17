@@ -1310,20 +1310,16 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 // when favouring minPredBG allow more of eventualBG if resistance detected
                 //eBGweight = (eBGweight == 0 && ENtimeOK ? 0.5 : eBGweight); // if daytime allow more eBGw
             }
-
-            // allow more eBG and use the SR adjusted sens_normalTarget with 30 minutes resistance
-            //if (TIR_sens >= 1 + TIRS_percent / 200 && EN_UseTBR_NoENTT) {
-            if (TIR_sens > 1 && EN_UseTBR_NoENTT) {
-                eBGweight = 1;
-                //insulinReq_sens_normalTarget = sens_normalTarget;
-            }
+            // allow more eBG when reistant with TBR enabled for all UAM+
+            if (EN_UseTBR_NoENTT) eBGweight = 0.75;
         }
 
         // UAM predictions, no COB or GhostCOB
         if (sens_predType == "UAM" && (!COB || ignoreCOB)) {
-            eBGweight = (ENWindowOK || TIR_sens > 1 ? 0.50 : eBGweight); // allow more eBG within ENW or UAM+ inherited eBGw
-            // SAFETY: UAM fast delta with higher bg lowers eBGw
-            eBGweight = (bg > ISFbgMax && delta >= 15 && ENWBolusIOBMax == 0 ? 0.30 : eBGweight);
+            // allow more eBG with TBR enabled for all UAM
+            if (EN_UseTBR_NoENTT) eBGweight = 0.50;
+            // SAFETY: UAM fast delta with higher bg lowers eBGw when SMB
+            eBGweight = (bg > ISFbgMax && delta >= 15 && ENWBolusIOBMax == 0 && !EN_UseTBR_NoENTT ? 0.30 : eBGweight);
         }
 
         // COB predictions or UAM with COB
