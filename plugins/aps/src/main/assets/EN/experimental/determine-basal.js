@@ -463,10 +463,11 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
     // ******  TIR_sens - a very simple implementation of autoISF configurable % per hour
     var TIR_L = 0, TIR_M = 0, TIR_H = 0, TIRS_percent = profile.resistancePerHr, TIR_sens = 0, TIR_sens_limited = 0;
-    if (TIRS_percent > 0) {
-        TIR_L = meal_data.TIR_L;    // TIR_L - The TIR for the lowest band below normalTarget (-9/0.5)
-        TIR_M = (!HighTempTargetSet ? meal_data.TIR_M : 0);
-        TIR_H = (!HighTempTargetSet ? meal_data.TIR_H : 0);
+    if (TIRS_percent > 0 && !HighTempTargetSet) {
+        TIR_L = meal_data.TIR_L; // TIR_L - The TIR for the lowest band below normalTarget (-9/0.5)
+        TIR_M = meal_data.TIR_M; // TIRM - The TIR for the lower band just above normalTarget (+18/1.0)
+        TIR_H = meal_data.TIR_H; // TIRH - The TIR for the higher band above 150/8.3
+
     }
 
     // TIRM - The TIR for the lower band just above normalTarget (+18/1.0)
