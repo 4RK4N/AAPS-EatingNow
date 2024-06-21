@@ -1684,8 +1684,9 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         // override insulinReq for initial pre-bolus (PB) if there are more units left
         insulinReq = (UAMBGPreBolusUnitsLeft > 0 ? Math.max(insulinReq,UAMBGPreBolusUnitsLeft) : insulinReq);
         // if that would put us over max_iob, then reduce accordingly
-        if (insulinReq > max_iob - iob_data.iob && !EN_UseTBR_NoENTT) {
+        if (insulinReq > max_iob - iob_data.iob) {
             rT.reason += "max_iob " + max_iob + ", ";
+            insulinReq = max_iob-iob_data.iob;
         } else if (max_iob_en > 0 && insulinReq > max_iob_en - iob_data.iob) {
             rT.reason += "max_iob_en " + max_iob_en + ", ";
             //insulinReq = max_iob_en - iob_data.iob;
@@ -1847,7 +1848,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 ENMaxSMB = 0; // fix bug for later code if using -1
 
                 // maxIOB when using TBR code within SMB routine
-                if (iob_data.iob + rate / 12 >= max_iob) rate = (max_iob - iob_data.iob) * 12;
+                // if (iob_data.iob + rate / 12 >= max_iob) rate = (max_iob - iob_data.iob) * 12;
             }
 
 
