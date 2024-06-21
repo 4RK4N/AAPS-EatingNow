@@ -491,7 +491,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     if (!profile.scale_isf_profile && profile.percent !== 100 && TIR_sens !== 1) {
         TIR_sens = TIR_sens > 1
             ? (TIR_sens - 1) * profile.percent / 100 + 1
-            : TIR_sens * profile.percent / 100 + 1;
+            : TIR_sens * profile.percent / 100;
     }
 
     //if (!profile.scale_isf_profile && profile.percent !=100 && TIR_sens > 1) TIR_sens += profile.percent/100-1;
