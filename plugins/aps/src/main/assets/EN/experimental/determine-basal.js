@@ -1219,8 +1219,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     var insulinReq_sens = sens_normalTarget, insulinReq_sens_normalTarget = sens_normalTarget_orig;
 
     // categorize the eventualBG prediction type for more accurate weighting
-    if (lastUAMpredBG > 0 && eventualBG == lastUAMpredBG) sens_predType = "UAM"; // UAM prediction
     if (lastCOBpredBG > 0 && eventualBG == lastCOBpredBG) sens_predType = "COB"; // if COB prediction is present eventualBG aligns
+    if (lastUAMpredBG > 0 && sens_predType != "COB") sens_predType = "UAM"; // UAM prediction
     if (sens_predType == "NA" && TIR_sens_limited < 1 && iob_data.iob <= 0) sens_predType = "IOB"; // if low IOB and no other prediction type is present
 
     // Process BG+ first for slight delta when resistant, lower range when asleep
