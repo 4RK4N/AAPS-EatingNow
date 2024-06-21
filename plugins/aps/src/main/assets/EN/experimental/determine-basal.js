@@ -1957,14 +1957,15 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             rate = round_basal(rate, profile);
         }
 
-//        // BG+ TBR restriction to EN_NoENW_maxBolus unless overnight
-//        if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus < 0) {
-//            var maxTBR = (ENtimeOK ? EN_NoENW_maxBolus : maxBolusOrig) * 12;
-//            var TBR = Math.min(4.5 / TIR_sens_limited * profile.current_basal,maxTBR,maxSafeBasal);  // 4 x the current TIRS base max is SMB at appropriate time
-//            rate = round_basal(TBR, profile);
-//            rT.reason += "temp " + round(currenttemp.rate, 2) + " &lt; BG+ " + rate + "U/hr. ";
-//            return tempBasalFunctions.setTempBasal(rate, 30, profile, rT, currenttemp);
-//        }
+        // BG+ TBR restriction to EN_NoENW_maxBolus unless overnight
+        if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus < 0) {
+            if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = profile.current_basal * 3; // BG+ gets basal rate * 3 with EN_UseTBR_NoENTT
+            rate = round_basal(rate, profile);
+            microBolus = 0; // set SMB to 0 as using TBR
+            ENMaxSMB = 0; // fix bug for later code if using -1
+            rT.reason += "temp " + round(currenttemp.rate, 2) + " &lt; BG+ " + rate + "U/hr. ";
+            return tempBasalFunctions.setTempBasal(rate, 30, profile, rT, currenttemp);
+        }
 
         if (rate > maxSafeBasal) {
             rT.reason += "adj. req. rate: " + round(rate, 3) + " to maxSafeBasal: " + maxSafeBasal + ", ";
