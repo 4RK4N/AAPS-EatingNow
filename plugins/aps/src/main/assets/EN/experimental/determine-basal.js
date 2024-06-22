@@ -1335,7 +1335,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             minGuardBG = threshold; // required to allow SMB consistently
             minBG = target_bg;
             eventualBG = bg;
-            eBGweight = (TIR_H_safety > 1 ? 1 : 0.5);
+            //eBGweight = (TIR_H_safety > 1 ? 1 : 0.5);
+            eBGweight = 0.5;
             //insulinReq_sens_normalTarget = sens_normalTarget; // use the SR adjusted sens_normalTarget
         }
 
@@ -1833,21 +1834,25 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
             // boost insulinReq and maxBolus if required limited to ENMaxSMB
             var microBolus = Math.floor(Math.min(insulinReq * insulinReqPct, maxBolus) * roundSMBTo) / roundSMBTo;
-
-            microBolus = Math.min(microBolus,profile.safety_maxbolus); // reduce to safety maxbolus if required, displays SMB correctly and allows TBR to have the correct treatment remainder
+            // reduce to safety maxbolus if required, displays SMB correctly and allows TBR to have the correct treatment remainder
+            microBolus = Math.min(microBolus,profile.safety_maxbolus);
 
             // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
-            if (EN_UseTBR_NoENTT && insulinReq > 0) {
-                rate = microBolus * 12; // normal ENW SMB
-                rate = (rate == 0 ? profile.current_basal : rate); // if insulinReq and rate is 0 resume profile rate
-                //if (SMBinMins) rate *= TIR_sens_limited;
-                //if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = profile.current_basal * TIR_sens_limited; // BG+ gets rate with TIRS % applied
-                if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = profile.current_basal * 3; // BG+ gets basal rate * 3 with EN_UseTBR_NoENTT
-                //if (sens_predType == "BG+" && TIR_sens >= Math.min(autosens_max_tirs,1 + TIRS_percent/100 * 2) ) rate = profile.current_basal; // when TIR is at max for the TIR band
+            if (EN_UseTBR_NoENTT) {
+                // when SMB is 0 its TBR only, microBolus has already been adjusted by insulinReqPct
+                rate = (microBolus == 0 ? insulinReq * insulinReqPct : microBolus);
+                rate = rate * 12; // allow TBR to deliver it within the 5m loop interation
+                rate = Math.max(0, rate); // ZT is minimum
+
+                // restrict BG+ to basal rate * 3 with EN_UseTBR_NoENTT
+                if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = Math.min(rate, profile.current_basal * 3);
+
                 rate = round_basal(rate, profile);
                 microBolus = 0; // set SMB to 0 as using TBR
                 ENMaxSMB = 0; // fix bug for later code if using -1
 
+                rT.reason += "set " + sens_predType + " TBR " + rate + "U/hr. ";
+                return tempBasalFunctions.setTempBasal(rate, 30, profile, rT, currenttemp);
                 // maxIOB when using TBR code within SMB routine
                 // if (iob_data.iob + rate / 12 >= max_iob) rate = (max_iob - iob_data.iob) * 12;
             }
