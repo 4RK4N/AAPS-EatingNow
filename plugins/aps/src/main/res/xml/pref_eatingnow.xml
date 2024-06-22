@@ -436,9 +436,9 @@
                     android:inputType="numberDecimal"
                     android:key="@string/key_eatingnow_uamboost_maxbolus"
                     android:title="ENW UAM maxBolus"
-                    android:dialogMessage="UAM maxBolus for all BGL rises without COB within the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit and -1 will only disable SMB and use TBR only."
+                    android:dialogMessage="UAM maxBolus for all BGL rises without COB within the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit."
                     validate:floatmaxNumber="200"
-                    validate:floatminNumber="-1"
+                    validate:floatminNumber="0"
                     validate:testType="floatNumericRange"/>
 
                 <app.aaps.core.validators.ValidatingEditTextPreference
@@ -446,9 +446,9 @@
                     android:inputType="numberDecimal"
                     android:key="@string/key_eatingnow_cobboost_maxbolus"
                     android:title="ENW COB maxBolus"
-                    android:dialogMessage="COB maxBolus for BGL rises within the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit and -1 will only disable SMB and use TBR only."
+                    android:dialogMessage="COB maxBolus for BGL rises within the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit."
                     validate:floatmaxNumber="200"
-                    validate:floatminNumber="-1"
+                    validate:floatminNumber="0"
                     validate:testType="floatNumericRange"/>
 
                 <app.aaps.core.validators.ValidatingEditTextPreference
@@ -473,9 +473,9 @@
                     android:inputType="numberDecimal"
                     android:key="@string/key_eatingnow_noenw_maxbolus"
                     android:title="Outside ENW maxBolus"
-                    android:dialogMessage="maxBolus for BGL rises outside the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit and -1 will disable SMB and use TBR only."
+                    android:dialogMessage="maxBolus for BGL rises outside the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit."
                     validate:floatmaxNumber="200"
-                    validate:floatminNumber="-1"
+                    validate:floatminNumber="0"
                     validate:testType="floatNumericRange"/>
 
                 <SwitchPreference
@@ -510,9 +510,9 @@
                         android:inputType="numberDecimal"
                         android:key="@string/key_eatingnow_bgplus_maxbolus"
                         android:title="BG+ maxBolus"
-                        android:dialogMessage="BG+ maxBolus for when there is resistance and BG is stuck higher than target.\n0 will disable, -1 will use TBR only restricted to AAPS maxBolus and any other number will use SMB."
+                        android:dialogMessage="BG+ maxBolus for when there is resistance and BG is stuck higher than target.\n0 will disable."
                         validate:floatmaxNumber="60"
-                        validate:floatminNumber="-1"
+                        validate:floatminNumber="0"
                         validate:testType="floatNumericRange"/>
 
                 </androidx.preference.PreferenceScreen>
@@ -569,19 +569,9 @@
                 android:inputType="numberDecimal"
                 android:key="@string/key_eatingnow_noenw_maxbolus"
                 android:title="Outside ENW maxBolus"
-                android:dialogMessage="maxBolus for BGL rises outside the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit and -1 will disable SMB and use TBR only."
+                android:dialogMessage="maxBolus for BGL rises outside the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit."
                 validate:floatmaxNumber="200"
-                validate:floatminNumber="-1"
-                validate:testType="floatNumericRange"/>
-
-            <app.aaps.core.validators.ValidatingEditTextPreference
-                android:defaultValue="0"
-                android:inputType="numberDecimal"
-                android:key="@string/key_eatingnow_bgplus_maxbolus"
-                android:title="BG+ maxBolus"
-                android:dialogMessage="BG+ maxBolus for when there is resistance and BG is stuck higher than target.\n0 will disable, -1 will use TBR only restricted to AAPS maxBolus and any other number will use SMB."
-                validate:floatmaxNumber="60"
-                validate:floatminNumber="-1"
+                validate:floatminNumber="0"
                 validate:testType="floatNumericRange"/>
 
             <SwitchPreference
