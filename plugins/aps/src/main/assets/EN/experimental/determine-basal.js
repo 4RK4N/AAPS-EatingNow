@@ -1846,17 +1846,16 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
                 // restrict BG+ to basal rate * 3 with EN_UseTBR_NoENTT
                 if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = Math.min(rate, profile.current_basal * 3);
-
                 rate = round_basal(rate, profile);
+                rT.reason += sens_predType + " TBR only " + microBolus + "U=" + rate + "U/hr. ";
+
                 microBolus = 0; // set SMB to 0 as using TBR
                 ENMaxSMB = 0; // fix bug for later code if using -1
 
-                rT.reason += "set " + sens_predType + " TBR " + rate + "U/hr. ";
                 //return tempBasalFunctions.setTempBasal(rate, 30, profile, rT, currenttemp);
                 // maxIOB when using TBR code within SMB routine
                 // if (iob_data.iob + rate / 12 >= max_iob) rate = (max_iob - iob_data.iob) * 12;
             }
-
 
             // calculate a long enough zero temp to eventually correct back up to target
             var smbTarget = target_bg;
