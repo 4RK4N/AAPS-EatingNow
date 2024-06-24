@@ -1783,7 +1783,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             ENMaxSMB = (ENMaxSMB == 0 ? maxBolus : ENMaxSMB);
 
             // if ENMaxSMB is -1 no SMB
-            //ENMaxSMB = (ENMaxSMB == -1 ? 0 : ENMaxSMB);
+            ENMaxSMB = (ENMaxSMB == -1 ? 0 : ENMaxSMB);
 
             // if bg numbers resumed after sensor errors dont allow a large SMB
             ENMaxSMB = (minAgo < 1 && delta == 0 && glucose_status.short_avgdelta == 0 ? maxBolus : ENMaxSMB);
@@ -1839,9 +1839,9 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
             // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
             if (EN_UseTBR_NoENTT) {
-                // when SMB is 0 its TBR only, microBolus has already been adjusted by insulinReqPct
-                rate = (microBolus == 0 ? insulinReq * insulinReqPct : microBolus);
-                rate = rate * 12; // allow TBR to deliver it within the 5m loop interation
+                // when SMB is 0 or -1 its TBR only, microBolus has already been adjusted by insulinReqPct
+                microBolus = (microBolus <= 0 ? insulinReq * insulinReqPct : microBolus);
+                rate = microBolus * 12; // allow TBR to deliver it within the 5m loop interation
                 rate = Math.max(0, rate); // ZT is minimum
 
                 // restrict BG+ to basal rate * 3 with EN_UseTBR_NoENTT
