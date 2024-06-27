@@ -1798,10 +1798,10 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
             // ============== MAXBOLUS RESTRICTIONS ==============
             // if ENMaxSMB is more than AAPS max IOB then consider the setting to be minutes
-            var SMBinMins = false;
+            var SMBinMins = 0;
             if (ENMaxSMB > max_iob) {
+                SMBinMins = ENMaxSMB;
                 ENMaxSMB = profile.current_basal * ENMaxSMB / 60;
-                var SMBinMins = true;
             }
 
             var roundSMBTo = 1 / profile.bolus_increment;
@@ -1840,14 +1840,16 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
             if (EN_UseTBR_NoENTT) {
                 // when SMB is 0 or -1 its TBR only, microBolus has already been adjusted by insulinReqPct
-                microBolus = (microBolus <= 0 ? insulinReq * insulinReqPct : microBolus);
-                rate = microBolus * 12; // allow TBR to deliver it within the 5m loop interation
+                rate = (microBolus <= 0 ? Math.floor((insulinReq * insulinReqPct) * roundSMBTo) / roundSMBTo : microBolus);
+                rate = rate * 12; // allow TBR to deliver it within the 5m loop interation
                 rate = Math.max(0, rate); // ZT is minimum
+                //rate = Math.min(rate,profile.safety_maxbolus); // maxBolus is max, maxSafeBasal applied later
 
                 // restrict BG+ to basal rate * 3 with EN_UseTBR_NoENTT
                 if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = Math.min(rate, profile.current_basal * 3);
                 rate = round_basal(rate, profile);
-                rT.reason += sens_predType + " TBR only " + microBolus + "U=" + rate + "U/hr. ";
+                rT.reason += sens_predType + " TBR only " + (SMBinMins > 0 ? SMBinMins + "m/" : "");
+                rT.reason += (microBolus > 0 ? microbolus + "U=" : "") + rate + "U/hr. ";
 
                 microBolus = 0; // set SMB to 0 as using TBR
                 ENMaxSMB = 0; // fix bug for later code if using -1
