@@ -1852,7 +1852,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = Math.min(rate, profile.current_basal * 3);
                 rate = round_basal(rate, profile);
                 rT.reason += sens_predType + " TBR only " + (SMBinMins > 0 ? SMBinMins + "m/" : "");
-                rT.reason += (microBolus > 0 ? microbolus + "U=" : "") + rate + "U/hr. ";
+                rT.reason += (microBolus > 0 ? microBolus + "U=" : "") + rate + "U/hr. ";
 
                 microBolus = 0; // set SMB to 0 as using TBR
                 ENMaxSMB = 0; // fix bug for later code if using -1
