@@ -1770,7 +1770,10 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
             } else {
                 ENMaxSMB = EN_NoENW_maxBolus; // start with the default maxBolus
-                if (sens_predType == "UAM+" && !ENWindowOK && profile.EN_UAMPlusSMB_NoENW) ENMaxSMB = Math.max(profile.ENW_maxBolus_UAM_plus, UAMBGPreBolusUnitsLeft);
+                if (sens_predType == "UAM+" && !ENWindowOK && profile.EN_UAMPlusSMB_NoENW) {
+                    ENMaxSMB = Math.max(profile.ENW_maxBolus_UAM_plus, UAMBGPreBolusUnitsLeft);
+                    ENMaxSMB = (insulinReqOrig * insulinReqPct >= ENMaxSMB ? ENMaxSMB : EN_NoENW_maxBolus); // when AAPS insulinReq is higher allow UAM+ maxBolus outside ENW if enabled
+                }
             }
 
             // BG+ is the only EN prediction type allowed outside of ENW
