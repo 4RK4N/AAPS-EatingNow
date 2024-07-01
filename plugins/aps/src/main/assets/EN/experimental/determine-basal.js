@@ -1782,7 +1782,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
             // BG+ is the only EN prediction type allowed outside of ENW
             if (sens_predType == "BG+") {
-                ENMaxSMB = profile.current_basal * 3;
+                ENMaxSMB = (profile.current_basal * 3) / 12;
                 //if (TIR_sens > autosens_max_tirs && profile.EN_BGPlus_maxBolus > 0) ENMaxSMB = Math.max(profile.current_basal / 12,profile.bolus_increment); // force smaller ENMaxSMB for safety
             }
 
