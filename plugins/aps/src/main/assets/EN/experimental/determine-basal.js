@@ -246,7 +246,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     var ENTTActive = meal_data.activeENTempTargetDuration > 0;
     var ENPBActive = (typeof meal_data.activeENPB == 'undefined' ? false : meal_data.activeENPB);
     var HighTempTargetSet = (!ENTTActive && profile.temptargetSet && target_bg > normalTarget);
-    var EN_UseTBR_NoENTT = (profile.EN_UseTBR_NoENTT & !ENTTActive && !ENPBActive && !HighTempTargetSet);
+    //var EN_UseTBR_NoENTT = (profile.EN_UseTBR_NoENTT & !ENTTActive && !ENPBActive && !HighTempTargetSet);
+    var ENinsulinReqPct_NoENTT = profile.ENinsulinReqPct_NoENTT/100;
 
 
     // variables for deltas
@@ -1240,7 +1241,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     }
 
     // EXPERIMENT: Use NA as BG+ when safe
-    if (profile.EN_BGPlus_maxBolus != 0 && TIR_sens_limited > 1 && EN_UseTBR_NoENTT && sens_predType == "NA" && insulinReq_bg >= threshold && minGuardBG >= threshold && TIR_H_safety > 1) {
+    if (profile.EN_BGPlus_maxBolus != 0 && TIR_sens_limited > 1 && sens_predType == "NA" && insulinReq_bg >= threshold && minGuardBG >= threshold && TIR_H_safety > 1) {
         sens_predType = "BG+";
         var endebug = "BG+ NA";
     }
@@ -1312,15 +1313,16 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 //eBGweight = (eBGweight == 0 && ENtimeOK ? 0.5 : eBGweight); // if daytime allow more eBGw
             }
             // allow more eBG when reistant with TBR enabled for all UAM+
-            if (EN_UseTBR_NoENTT && eBGweight == eBGweight_orig) eBGweight = 0.75;
+            if (eBGweight == eBGweight_orig) eBGweight = 0.75;
+            //if (ENinsulinReqPct_NoENTT == 0 && eBGweight == eBGweight_orig) eBGweight = 0.75;
         }
 
         // UAM predictions, no COB or GhostCOB
         if (sens_predType == "UAM" && (!COB || ignoreCOB)) {
             // allow more eBG with TBR enabled for all UAM
-            if (EN_UseTBR_NoENTT && eBGweight == eBGweight_orig) eBGweight = 0.75;
+            if (eBGweight == eBGweight_orig) eBGweight = 0.75;
             // SAFETY: UAM fast delta with higher bg lowers eBGw when SMB
-            eBGweight = (bg > ISFbgMax && delta >= 15 && ENWBolusIOBMax == 0 && !EN_UseTBR_NoENTT ? 0.30 : eBGweight);
+            eBGweight = (bg > ISFbgMax && delta >= 15 && ENWBolusIOBMax == 0 ? 0.30 : eBGweight);
         }
 
         // COB predictions or UAM with COB
@@ -1746,12 +1748,14 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             }
 
             var ENinsulinReqPct = 0.75; // EN insulinReqPct is 75%
+            ENinsulinReqPct_NoENTT = profile.ENinsulinReqPct_NoENTT/100;
             var ENWinsulinReqPct = (ENWStartedAgo <= ENWindowDuration ? 1 : ENinsulinReqPct); // ENW insulinReqPct is 100% for the first 30 mins then 85%
 
 
             // ============== INSULINREQPCT CHANGES ==============
             if (ENactive) insulinReqPct = ENinsulinReqPct;
             if (ENWindowOK) insulinReqPct = ENWinsulinReqPct;
+            if (ENactive && !ENTTActive && !ENPBActive && !HighTempTargetSet && ENinsulinReqPct_NoENTT != ENinsulinReqPct) insulinReqPct = Math.min(ENinsulinReqPct_NoENTT, insulinReqPct);
 
             // PreBolus period gets 100% insulinReqPct
             insulinReqPct = (UAMBGPreBolus ? 1 : insulinReqPct);
@@ -1777,9 +1781,9 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             }
 
             // BG+ is the only EN prediction type allowed outside of ENW
-            if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus != 0) {
-                ENMaxSMB = profile.EN_BGPlus_maxBolus;
-                if (TIR_sens > autosens_max_tirs && profile.EN_BGPlus_maxBolus > 0) ENMaxSMB = Math.max(profile.current_basal / 12,profile.bolus_increment); // force smaller ENMaxSMB for safety
+            if (sens_predType == "BG+") {
+                ENMaxSMB = profile.current_basal * 3;
+                //if (TIR_sens > autosens_max_tirs && profile.EN_BGPlus_maxBolus > 0) ENMaxSMB = Math.max(profile.current_basal / 12,profile.bolus_increment); // force smaller ENMaxSMB for safety
             }
 
             // if ENMaxSMB is more than 0 use ENMaxSMB else use AAPS max minutes
@@ -1840,27 +1844,27 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             // reduce to safety maxbolus if required, displays SMB correctly and allows TBR to have the correct treatment remainder
             microBolus = Math.min(microBolus,profile.safety_maxbolus);
 
-            // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
-            if (EN_UseTBR_NoENTT) {
-                // when SMB is 0 or -1 its TBR only, microBolus has already been adjusted by insulinReqPct
-                rate = (microBolus <= 0 ? Math.floor((insulinReq * insulinReqPct) * roundSMBTo) / roundSMBTo : microBolus);
-                rate = rate * 12; // allow TBR to deliver it within the 5m loop interation
-                rate = Math.max(0, rate); // ZT is minimum
-                //rate = Math.min(rate,profile.safety_maxbolus); // maxBolus is max, maxSafeBasal applied later
-
-                // restrict BG+ to basal rate * 3 with EN_UseTBR_NoENTT
-                if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = Math.min(rate, profile.current_basal * 3);
-                rate = round_basal(rate, profile);
-                rT.reason += sens_predType + " TBR only " + (SMBinMins > 0 ? SMBinMins + "m/" : "");
-                rT.reason += (microBolus > 0 ? microBolus + "U=" : "") + rate + "U/hr. ";
-
-                microBolus = 0; // set SMB to 0 as using TBR
-                ENMaxSMB = 0; // fix bug for later code if using -1
-
-                //return tempBasalFunctions.setTempBasal(rate, 30, profile, rT, currenttemp);
-                // maxIOB when using TBR code within SMB routine
-                // if (iob_data.iob + rate / 12 >= max_iob) rate = (max_iob - iob_data.iob) * 12;
-            }
+//            // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
+//            if (EN_UseTBR_NoENTT) {
+//                // when SMB is 0 or -1 its TBR only, microBolus has already been adjusted by insulinReqPct
+//                rate = (microBolus <= 0 ? Math.floor((insulinReq * insulinReqPct) * roundSMBTo) / roundSMBTo : microBolus);
+//                rate = rate * 12; // allow TBR to deliver it within the 5m loop interation
+//                rate = Math.max(0, rate); // ZT is minimum
+//                //rate = Math.min(rate,profile.safety_maxbolus); // maxBolus is max, maxSafeBasal applied later
+//
+//                // restrict BG+ to basal rate * 3 with EN_UseTBR_NoENTT
+//                if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = Math.min(rate, profile.current_basal * 3);
+//                rate = round_basal(rate, profile);
+//                rT.reason += sens_predType + " TBR only " + (SMBinMins > 0 ? SMBinMins + "m/" : "");
+//                rT.reason += (microBolus > 0 ? microBolus + "U=" : "") + rate + "U/hr. ";
+//
+//                microBolus = 0; // set SMB to 0 as using TBR
+//                ENMaxSMB = 0; // fix bug for later code if using -1
+//
+//                //return tempBasalFunctions.setTempBasal(rate, 30, profile, rT, currenttemp);
+//                // maxIOB when using TBR code within SMB routine
+//                // if (iob_data.iob + rate / 12 >= max_iob) rate = (max_iob - iob_data.iob) * 12;
+//            }
 
             // calculate a long enough zero temp to eventually correct back up to target
             var smbTarget = target_bg;
@@ -1955,6 +1959,31 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             //rate = Math.max(basal + (insulinReq * 2 - microBolus), 0); //remaining insulinReq over 60 minutes * 2 = 30 minutes
             rate = Math.max(basal + (insulinReq * 3 - microBolus), 0); //remaining insulinReq over 60 minutes * 3 = 20 minutes
             rate = round_basal(rate, profile);
+        }
+
+        // SAFETY: when overriding the insulinReqPct ensure that TBR is also provided
+        if (insulinReq > 0 && ENinsulinReqPct_NoENTT != ENinsulinReqPct) {
+            //AllowZT = false; // disable ZT
+
+            // deliver the remaining insulinReq as TBR
+            //if (sens_predType == "BG+" && TIR_sens_limited > 1) insulinReqPct = (ENactive ? ENinsulinReqPct : insulinReqPctDefault);
+            //rate = (microBolus <= 0 ? Math.floor((insulinReq * insulinReqPct) * roundSMBTo) / roundSMBTo : insulinReq * (ENinsulinReqPct - ENinsulinReqPct_NoENTT));
+            rate = (microBolus == 0 ? insulinReq * insulinReqPct : insulinReq * (ENinsulinReqPct - insulinReqPct));
+            rate = rate * 12; // allow TBR to deliver it within the 5m loop interation
+            rate = Math.max(0, rate); // ZT is minimum
+
+            // restrict BG+ to basal rate * 3
+            //if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = Math.min(rate, profile.current_basal * 3);
+
+            rate = round_basal(rate, profile);
+            rT.reason += (microBolus > 0 ? "SMB " + microBolus + "U + " : "") + "TBR " + rate + "U/hr. ";
+
+            //microBolus = 0; // set SMB to 0 as using TBR
+            ENMaxSMB = 0; // fix bug for later code if using -1
+
+            //return tempBasalFunctions.setTempBasal(rate, 30, profile, rT, currenttemp);
+            // maxIOB when using TBR code within SMB routine
+            // if (iob_data.iob + rate / 12 >= max_iob) rate = (max_iob - iob_data.iob) * 12;
         }
 
 //        // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on

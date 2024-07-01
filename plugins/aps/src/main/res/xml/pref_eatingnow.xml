@@ -478,11 +478,11 @@
                     validate:floatminNumber="0"
                     validate:testType="floatNumericRange"/>
 
-                <SwitchPreference
-                    android:defaultValue="false"
-                    android:key="key_noentt_use_tbr"
-                    android:title="Disable SMB outside EN-TT"
-                    android:summary="All treatments outside of an Eating Now temptarget will disable SMB and use TBR restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+). Other temptargets will not be impacted." />
+<!--                <SwitchPreference-->
+<!--                    android:defaultValue="false"-->
+<!--                    android:key="key_noentt_use_tbr"-->
+<!--                    android:title="Disable SMB outside EN-TT"-->
+<!--                    android:summary="All treatments outside of an Eating Now temptarget will disable SMB and use TBR restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+). Other temptargets will not be impacted." />-->
 
                 <androidx.preference.PreferenceScreen
                     android:key="outside_enw_sens"
@@ -574,11 +574,21 @@
                 validate:floatminNumber="0"
                 validate:testType="floatNumericRange"/>
 
-            <SwitchPreference
-                android:defaultValue="false"
-                android:key="key_noentt_use_tbr"
-                android:title="Disable SMB outside EN-TT"
-                android:summary="All treatments outside of an Eating Now temptarget will disable SMB and use TBR restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+). Other temptargets will not be impacted." />
+<!--            <SwitchPreference-->
+<!--                android:defaultValue="false"-->
+<!--                android:key="key_noentt_use_tbr"-->
+<!--                android:title="Disable SMB outside EN-TT"-->
+<!--                android:summary="All treatments outside of an Eating Now temptarget will disable SMB and use TBR restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+). Other temptargets will not be impacted." />-->
+
+            <app.aaps.core.validators.ValidatingEditTextPreference
+                android:defaultValue="75"
+                android:inputType="number"
+                android:title="SMB % outside EN-TT"
+                android:key="key_noentt_smb_percentage"
+                android:dialogMessage="All treatments outside of an Eating Now temptarget will provide SMB as a percentage of insulinReq with remaining as TBR. This is restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+). Other temptargets will not be impacted."
+                validate:maxNumber="75"
+                validate:minNumber="0"
+                validate:testType="numericRange" />
 
         </androidx.preference.PreferenceScreen>
 
