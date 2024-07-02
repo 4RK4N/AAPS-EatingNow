@@ -1823,8 +1823,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 maxBolus = Math.floor(maxBolus * roundSMBTo) / roundSMBTo;
                 maxBolus = round(maxBolus, 2);
             } else {
-                // Default insulinReqPct at night
-                insulinReqPct = insulinReqPctDefault;
+                // Default insulinReqPct at night unless insulinReqPctChanged
+                insulinReqPct = Math.min(insulinReqPctDefault,insulinReqPct);
                 // default SMB unless TBR
                 maxBolus = (sens_predType == "TBR" ? 0 : Math.min(maxBolus,ENMaxSMB) );
                 maxBolus = Math.floor(maxBolus * roundSMBTo) / roundSMBTo;
