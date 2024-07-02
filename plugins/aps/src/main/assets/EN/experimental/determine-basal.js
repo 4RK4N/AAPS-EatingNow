@@ -1974,7 +1974,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             rate = rate * 12; // allow TBR to deliver it within the 5m loop interation
             rate = Math.max(0, rate); // ZT is minimum
             rate = round_basal(rate, profile);
-            rT.reason += " + TBR " + rate + "U/hr. ";
+            rT.reason += (microBolus > 0 ? " +" : "") + " TBR " + rate + "U/hr. ";
         }
 
 //        // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
