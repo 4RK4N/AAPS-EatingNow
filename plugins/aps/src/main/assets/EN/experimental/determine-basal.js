@@ -1756,7 +1756,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             // ============== INSULINREQPCT CHANGES ==============
             if (ENactive) insulinReqPct = ENinsulinReqPct;
             if (ENWindowOK) insulinReqPct = ENWinsulinReqPct;
-            if (ENactive && !ENTTActive && !ENPBActive && !HighTempTargetSet && ENinsulinReqPct_NoENTT < insulinReqPct) insulinReqPctChanged = true;
+            if (!ENTTActive && !ENPBActive && !HighTempTargetSet && ENinsulinReqPct_NoENTT < insulinReqPct) insulinReqPctChanged = true; // var for ENinsulinReqPct_NoENTT
             insulinReqPct = (insulinReqPctChanged ? ENinsulinReqPct_NoENTT: insulinReqPct); // update insulinReqPct if reduced
 
             // PreBolus period gets 100% insulinReqPct
