@@ -1749,13 +1749,15 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
             var ENinsulinReqPct = 0.75; // EN insulinReqPct is 75%
             ENinsulinReqPct_NoENTT = profile.ENinsulinReqPct_NoENTT/100;
+            var insulinReqPctChanged = false;
             var ENWinsulinReqPct = (ENWStartedAgo <= ENWindowDuration ? 1 : ENinsulinReqPct); // ENW insulinReqPct is 100% for the first 30 mins then 85%
 
 
             // ============== INSULINREQPCT CHANGES ==============
             if (ENactive) insulinReqPct = ENinsulinReqPct;
             if (ENWindowOK) insulinReqPct = ENWinsulinReqPct;
-            if (ENactive && !ENTTActive && !ENPBActive && !HighTempTargetSet && ENinsulinReqPct_NoENTT != ENinsulinReqPct) insulinReqPct = Math.min(ENinsulinReqPct_NoENTT, insulinReqPct);
+            if (ENactive && !ENTTActive && !ENPBActive && !HighTempTargetSet && ENinsulinReqPct_NoENTT < insulinReqPct) insulinReqPctChanged = true;
+            insulinReqPct = (insulinReqPctChanged ? ENinsulinReqPct_NoENTT: insulinReqPct); // update insulinReqPct if reduced
 
             // PreBolus period gets 100% insulinReqPct
             insulinReqPct = (UAMBGPreBolus ? 1 : insulinReqPct);
@@ -1874,6 +1876,9 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
             // when insulinReq is greater than 2 x maxBolus for UAM+ or PB disable ZT
             if (ENactive && insulinReq > microBolus *2 && sens_predType == "UAM+" || UAMBGPreBolusUnitsLeft > 0) AllowZT = false;
+            // if ENinsulinReqPct_NoENTT has reduced the insulinReqPct (insulinReqPctChanged)
+            if (insulinReqPctChanged) AllowZT = false;
+
             // No ZT allowed by EN
             if (!AllowZT) durationReq = 0;
 
@@ -1961,29 +1966,15 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             rate = round_basal(rate, profile);
         }
 
-        // SAFETY: when overriding the insulinReqPct ensure that TBR is also provided
-        if (insulinReq > 0 && ENinsulinReqPct_NoENTT != ENinsulinReqPct) {
-            //AllowZT = false; // disable ZT
-
-            // deliver the remaining insulinReq as TBR
-            //if (sens_predType == "BG+" && TIR_sens_limited > 1) insulinReqPct = (ENactive ? ENinsulinReqPct : insulinReqPctDefault);
-            //rate = (microBolus <= 0 ? Math.floor((insulinReq * insulinReqPct) * roundSMBTo) / roundSMBTo : insulinReq * (ENinsulinReqPct - ENinsulinReqPct_NoENTT));
-            rate = (microBolus == 0 ? insulinReq * insulinReqPct : insulinReq * (ENinsulinReqPct - insulinReqPct));
+        // SAFETY: when overriding the insulinReqPct ensure that TBR is also provided - insulinReqPctChanged
+        if (insulinReqPctChanged) {
+            // deliver the remaining insulinReq as TBR up to maxBolus
+            if (microBolus == 0) insulinReqPct = 0; // reset insulinReqPct to allow rate to get full insulinReq at normal %
+            rate = Math.min(maxBolus-microBolus,insulinReq*(ENinsulinReqPct-insulinReqPct));
             rate = rate * 12; // allow TBR to deliver it within the 5m loop interation
             rate = Math.max(0, rate); // ZT is minimum
-
-            // restrict BG+ to basal rate * 3
-            //if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = Math.min(rate, profile.current_basal * 3);
-
             rate = round_basal(rate, profile);
-            rT.reason += (microBolus > 0 ? "SMB " + microBolus + "U + " : "") + "TBR " + rate + "U/hr. ";
-
-            //microBolus = 0; // set SMB to 0 as using TBR
-            ENMaxSMB = 0; // fix bug for later code if using -1
-
-            //return tempBasalFunctions.setTempBasal(rate, 30, profile, rT, currenttemp);
-            // maxIOB when using TBR code within SMB routine
-            // if (iob_data.iob + rate / 12 >= max_iob) rate = (max_iob - iob_data.iob) * 12;
+            rT.reason += " + TBR " + rate + "U/hr. ";
         }
 
 //        // SAFETY: if no SMB given and ENMaxSMB is set to TBR only restrict basal rate based on
