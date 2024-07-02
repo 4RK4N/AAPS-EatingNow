@@ -1971,6 +1971,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             // deliver the remaining insulinReq as TBR up to maxBolus
             if (microBolus == 0) insulinReqPct = 0; // reset insulinReqPct to allow rate to get full insulinReq at normal %
             rate = Math.min(maxBolus-microBolus,insulinReq*(ENinsulinReqPct-insulinReqPct));
+            rate = (insulinReqOrig >= ENMaxSMB && ENactive ? (insulinReq*ENinsulinReqPct) - microBolus : rate); // when AAPS insulinReq is higher allow remaining TBR from insulinReq
             rate = rate * 12; // allow TBR to deliver it within the 5m loop interation
             rate = Math.max(0, rate); // ZT is minimum
             rate = round_basal(rate, profile);
