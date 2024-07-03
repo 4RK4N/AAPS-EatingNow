@@ -1313,14 +1313,14 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 //eBGweight = (eBGweight == 0 && ENtimeOK ? 0.5 : eBGweight); // if daytime allow more eBGw
             }
             // allow more eBG when reistant with TBR enabled for all UAM+
-            if (eBGweight == eBGweight_orig) eBGweight = 0.75;
+            if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.75;
             //if (ENinsulinReqPct_NoENTT == 0 && eBGweight == eBGweight_orig) eBGweight = 0.75;
         }
 
         // UAM predictions, no COB or GhostCOB
         if (sens_predType == "UAM" && (!COB || ignoreCOB)) {
             // allow more eBG with TBR enabled for all UAM
-            if (eBGweight == eBGweight_orig) eBGweight = 0.75;
+            if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.75;
             // SAFETY: UAM fast delta with higher bg lowers eBGw when SMB
             eBGweight = (bg > ISFbgMax && delta >= 15 && ENWBolusIOBMax == 0 ? 0.30 : eBGweight);
         }
