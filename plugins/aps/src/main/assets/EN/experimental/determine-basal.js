@@ -1338,7 +1338,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             minBG = target_bg;
             eventualBG = bg;
             //eBGweight = (TIR_H_safety > 1 ? 1 : 0.5);
-            eBGweight = 0.5;
+            eBGweight = 0.35;
             //insulinReq_sens_normalTarget = sens_normalTarget; // use the SR adjusted sens_normalTarget
         }
 
