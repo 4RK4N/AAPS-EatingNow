@@ -1320,7 +1320,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         // UAM predictions, no COB or GhostCOB
         if (sens_predType == "UAM" && (!COB || ignoreCOB)) {
             // allow more eBG with TBR enabled for all UAM
-            if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.75;
+            //if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.75;
+            if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.65;
             // SAFETY: UAM fast delta with higher bg lowers eBGw when SMB
             eBGweight = (bg > ISFbgMax && delta >= 15 && ENWBolusIOBMax == 0 ? 0.30 : eBGweight);
         }
