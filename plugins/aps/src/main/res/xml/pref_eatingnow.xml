@@ -484,39 +484,6 @@
 <!--                    android:title="Disable SMB outside EN-TT"-->
 <!--                    android:summary="All treatments outside of an Eating Now temptarget will disable SMB and use TBR restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+). Other temptargets will not be impacted." />-->
 
-                <androidx.preference.PreferenceScreen
-                    android:key="outside_enw_sens"
-                    android:title="Sensitivity and Resistance Settings"
-                    android:summary="Settings to assist with time in range.">
-
-                    <app.aaps.core.validators.ValidatingEditTextPreference
-                        android:defaultValue="0"
-                        android:inputType="number"
-                        android:title="TIRS % resistance per hour"
-                        android:key="@string/en_resistance_per_hour"
-                        android:dialogMessage="ISF will become stronger every loop iteration when bg is high. This will set Maximum resistance per hour in percentage. MaxISF is respected."
-                        validate:maxNumber="25"
-                        validate:minNumber="0"
-                        validate:testType="numericRange" />
-
-                    <SwitchPreference
-                        android:defaultValue="false"
-                        android:key="en_tirs_always"
-                        android:title="Use TIRS within Eating Window"
-                        android:summary="By default ISF adjustments for resistance will not occur during ENW. Enabling this option will allow TIRS to adjust resistance at all times."/>
-
-                    <app.aaps.core.validators.ValidatingEditTextPreference
-                        android:defaultValue="0"
-                        android:inputType="numberDecimal"
-                        android:key="@string/key_eatingnow_bgplus_maxbolus"
-                        android:title="BG+ maxBolus"
-                        android:dialogMessage="BG+ maxBolus for when there is resistance and BG is stuck higher than target.\n0 will disable."
-                        validate:floatmaxNumber="60"
-                        validate:floatminNumber="0"
-                        validate:testType="floatNumericRange"/>
-
-                </androidx.preference.PreferenceScreen>
-
         </androidx.preference.PreferenceScreen>
 
         <androidx.preference.PreferenceScreen
@@ -721,6 +688,39 @@
                 android:key="key_use_sr_tdd"
                 android:title="Use TDD based SensitivityRatio"
                 android:summary="Use recent TDD history to calculate current SensitivityRatio. Used for basal only. Min/Max Autosens values will be respected."/>
+
+            <androidx.preference.PreferenceScreen
+                android:key="outside_enw_sens"
+                android:title="Sensitivity and Resistance Settings"
+                android:summary="Settings to assist with time in range.">
+
+                <app.aaps.core.validators.ValidatingEditTextPreference
+                    android:defaultValue="0"
+                    android:inputType="number"
+                    android:title="TIRS % resistance per hour"
+                    android:key="@string/en_resistance_per_hour"
+                    android:dialogMessage="ISF will become stronger every loop iteration when bg is high. This will set Maximum resistance per hour in percentage. MaxISF is respected."
+                    validate:maxNumber="25"
+                    validate:minNumber="0"
+                    validate:testType="numericRange" />
+
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="en_tirs_always"
+                    android:title="Use TIRS within Eating Window"
+                    android:summary="By default ISF adjustments for resistance will not occur during ENW. Enabling this option will allow TIRS to adjust resistance at all times."/>
+
+                <app.aaps.core.validators.ValidatingEditTextPreference
+                    android:defaultValue="0"
+                    android:inputType="numberDecimal"
+                    android:key="@string/key_eatingnow_bgplus_maxbolus"
+                    android:title="BG+ maxBolus"
+                    android:dialogMessage="BG+ maxBolus for when there is resistance and BG is stuck higher than target.\n0 will disable."
+                    validate:floatmaxNumber="60"
+                    validate:floatminNumber="0"
+                    validate:testType="floatNumericRange"/>
+
+            </androidx.preference.PreferenceScreen>
 
         </PreferenceCategory>
 
