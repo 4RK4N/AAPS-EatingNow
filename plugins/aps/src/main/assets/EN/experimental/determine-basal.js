@@ -1308,7 +1308,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 //eBGweight = (eBGweight == 0 && ENtimeOK ? 0.5 : eBGweight); // if daytime allow more eBGw
             }
             // allow more eBG when reistant with TBR enabled for all UAM+
-            if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.75;
+            //if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.75;
+            if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.55;
             //if (ENinsulinReqPct_NoENTT == 0 && eBGweight == eBGweight_orig) eBGweight = 0.75;
         }
 
