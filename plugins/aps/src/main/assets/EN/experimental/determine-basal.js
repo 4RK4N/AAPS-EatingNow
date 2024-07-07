@@ -1225,7 +1225,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     if (sens_predType == "NA" && TIR_sens_limited < 1 && iob_data.iob <= 0) sens_predType = "IOB"; // if low IOB and no other prediction type is present
 
     // Process BG+ first for slight delta when resistant, lower range when asleep
-    if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && (insulinReq_bg >= -1.5 * bg && insulinReq_bg <= threshold || minGuardBG >= -1.5 * bg && minGuardBG <= threshold) && delta > -4 && delta <= 6 && glucose_status.long_avgdelta > -4) {
+    if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_Use_BGPlus && (insulinReq_bg >= -1.5 * bg && insulinReq_bg <= threshold || minGuardBG >= -1.5 * bg && minGuardBG <= threshold) && delta > -4 && delta <= 6 && glucose_status.long_avgdelta > -4) {
         if (TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
     }
 
@@ -1241,7 +1241,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     }
 
     // EXPERIMENT: Use NA as BG+ when safe
-    if (profile.EN_BGPlus_maxBolus != 0 && TIR_sens_limited > 1 && sens_predType == "NA" && insulinReq_bg >= threshold && minGuardBG >= threshold && TIR_H_safety > 1) {
+    if (profile.EN_Use_BGPlus && TIR_sens_limited > 1 && sens_predType == "NA" && insulinReq_bg >= threshold && minGuardBG >= threshold && TIR_H_safety > 1) {
         sens_predType = "BG+";
         var endebug = "BG+ NA";
     }
@@ -1257,11 +1257,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
     // Pre-bolus condition matches set PB type when not accelerating
     if (UAMBGPreBolus && sens_predType != "UAM+") sens_predType = "PB";
-
-//    // BG+ outside of UAM prediction when resistant, lower range when asleep
-//    if (TIR_sens_limited > 1 && !ENWindowOK && profile.EN_BGPlus_maxBolus != 0 && eventualBG >= -2 * bg && eventualBG <= threshold && sens_predType == "NA" && delta > -4 && delta <= 6) {
-//        if (TIR_H_safety > 1 || (TIR_M_safety > 1 && (!ENtimeOK || meal_data.TIR_M_pct == 100))) sens_predType = "BG+";
-//    }
 
     // TBR for tt that isn't EN at normal target
     if (profile.temptargetSet && !ENTTActive && target_bg == normalTarget) sens_predType = "TBR";
@@ -1786,7 +1781,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             // BG+ is the only EN prediction type allowed outside of ENW
             if (sens_predType == "BG+") {
                 ENMaxSMB = (profile.current_basal * 3) / 12;
-                //if (TIR_sens > autosens_max_tirs && profile.EN_BGPlus_maxBolus > 0) ENMaxSMB = Math.max(profile.current_basal / 12,profile.bolus_increment); // force smaller ENMaxSMB for safety
+                //if (TIR_sens > autosens_max_tirs && profile.EN_Use_BGPlus > 0) ENMaxSMB = Math.max(profile.current_basal / 12,profile.bolus_increment); // force smaller ENMaxSMB for safety
             }
 
             // if ENMaxSMB is more than 0 use ENMaxSMB else use AAPS max minutes
@@ -1986,16 +1981,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 //            if (!ENWindowOK) MaxTBR = maxBolusOrig; // Safety SMB
 //            rate = (MaxTBR * 12) * insulinReqPct;
 //            rate = round_basal(rate, profile);
-//        }
-
-//        // BG+ TBR restriction to EN_NoENW_maxBolus unless overnight
-//        if (sens_predType == "BG+" && profile.EN_BGPlus_maxBolus < 0) {
-//            if (sens_predType == "BG+" && TIR_sens_limited > 1) rate = profile.current_basal * 3; // BG+ gets basal rate * 3 with EN_UseTBR_NoENTT
-//            rate = round_basal(rate, profile);
-//            microBolus = 0; // set SMB to 0 as using TBR
-//            ENMaxSMB = 0; // fix bug for later code if using -1
-//            rT.reason += "temp " + round(currenttemp.rate, 2) + " &lt; BG+ " + rate + "U/hr. ";
-//            return tempBasalFunctions.setTempBasal(rate, 30, profile, rT, currenttemp);
 //        }
 
         if (rate > maxSafeBasal) {
