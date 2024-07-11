@@ -531,15 +531,15 @@
                 validate:minNumber="0"
                 validate:testType="numericRange" />
 
-            <app.aaps.core.validators.ValidatingEditTextPreference
-                android:defaultValue="0"
-                android:inputType="numberDecimal"
-                android:key="@string/key_eatingnow_noenw_maxbolus"
-                android:title="Outside ENW maxBolus"
-                android:dialogMessage="maxBolus for BGL rises outside the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit."
-                validate:floatmaxNumber="200"
-                validate:floatminNumber="0"
-                validate:testType="floatNumericRange"/>
+<!--            <app.aaps.core.validators.ValidatingEditTextPreference-->
+<!--                android:defaultValue="0"-->
+<!--                android:inputType="numberDecimal"-->
+<!--                android:key="@string/key_eatingnow_noenw_maxbolus"-->
+<!--                android:title="Outside ENW maxBolus"-->
+<!--                android:dialogMessage="maxBolus for BGL rises outside the EN Window.\nIf this value is larger than maxIOB it will be considered to be minutes of basal.\n0 will use existing AAPS maxBolus limit."-->
+<!--                validate:floatmaxNumber="200"-->
+<!--                validate:floatminNumber="0"-->
+<!--                validate:testType="floatNumericRange"/>-->
 
 <!--            <SwitchPreference-->
 <!--                android:defaultValue="false"-->

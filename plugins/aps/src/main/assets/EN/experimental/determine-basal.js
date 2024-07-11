@@ -1775,7 +1775,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 ENMaxSMB = EN_NoENW_maxBolus; // start with the default maxBolus
                 if (sens_predType == "UAM+" && !ENWindowOK && profile.EN_UAMPlusSMB_NoENW) {
                     ENMaxSMB = Math.max(profile.ENW_maxBolus_UAM_plus, UAMBGPreBolusUnitsLeft);
-                    ENMaxSMB = (insulinReqOrig * ENinsulinReqPct >= ENMaxSMB ? ENMaxSMB : EN_NoENW_maxBolus); // when AAPS insulinReq is higher allow UAM+ maxBolus outside ENW if enabled
+                    //ENMaxSMB = (insulinReqOrig * ENinsulinReqPct >= ENMaxSMB ? ENMaxSMB : EN_NoENW_maxBolus); // when AAPS insulinReq is higher allow UAM+ maxBolus outside ENW if enabled
+                    ENMaxSMB = (insulinReqOrig > EN_NoENW_maxBolus ? Math.min(insulinReqOrig, ENMaxSMB) : EN_NoENW_maxBolus); // when AAPS insulinReq is higher than EN_NoENW_maxBolus allow larger UAM+ maxBolus up to ENW_maxBolus_UAM_plus
                 }
             }
 
