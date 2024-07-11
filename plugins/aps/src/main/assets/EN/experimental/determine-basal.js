@@ -247,7 +247,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     var ENPBActive = (typeof meal_data.activeENPB == 'undefined' ? false : meal_data.activeENPB);
     var HighTempTargetSet = (!ENTTActive && profile.temptargetSet && target_bg > normalTarget);
     //var EN_UseTBR_NoENTT = (profile.EN_UseTBR_NoENTT & !ENTTActive && !ENPBActive && !HighTempTargetSet);
-    var ENinsulinReqPct_NoENTT = profile.ENinsulinReqPct_NoENTT/100;
+    var EN_SMB_percent = profile.EN_SMB_percent/100;
 
 
     // variables for deltas
@@ -1310,7 +1310,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             // allow more eBG when reistant with TBR enabled for all UAM+
             //if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.75;
             if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.55;
-            //if (ENinsulinReqPct_NoENTT == 0 && eBGweight == eBGweight_orig) eBGweight = 0.75;
+            //if (EN_SMB_percent == 0 && eBGweight == eBGweight_orig) eBGweight = 0.75;
         }
 
         // UAM predictions, no COB or GhostCOB
@@ -1745,7 +1745,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             }
 
             var ENinsulinReqPct = 0.75; // EN insulinReqPct is 75%
-            ENinsulinReqPct_NoENTT = profile.ENinsulinReqPct_NoENTT/100;
+            EN_SMB_percent = profile.EN_SMB_percent/100;
             var insulinReqPctChanged = false;
             var ENWinsulinReqPct = (ENWStartedAgo <= ENWindowDuration ? 1 : ENinsulinReqPct); // ENW insulinReqPct is 100% for the first 30 mins then 85%
 
@@ -1753,8 +1753,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             // ============== INSULINREQPCT CHANGES ==============
             if (ENactive) insulinReqPct = ENinsulinReqPct;
             if (ENWindowOK) insulinReqPct = ENWinsulinReqPct;
-            if (!ENTTActive && !ENPBActive && !HighTempTargetSet && ENinsulinReqPct_NoENTT < insulinReqPct) insulinReqPctChanged = true; // var for ENinsulinReqPct_NoENTT
-            insulinReqPct = (insulinReqPctChanged ? ENinsulinReqPct_NoENTT: insulinReqPct); // update insulinReqPct if reduced
+            if (!HighTempTargetSet && EN_SMB_percent < insulinReqPct && !UAMBGPreBolus) insulinReqPctChanged = true; // var for EN_SMB_percent
+            insulinReqPct = (insulinReqPctChanged ? EN_SMB_percent: insulinReqPct); // update insulinReqPct if reduced
 
             // PreBolus period gets 100% insulinReqPct
             insulinReqPct = (UAMBGPreBolus ? 1 : insulinReqPct);
@@ -1873,7 +1873,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
             // when insulinReq is greater than 2 x maxBolus for UAM+ or PB disable ZT
             if (ENactive && insulinReq > microBolus *2 && sens_predType == "UAM+" || UAMBGPreBolusUnitsLeft > 0) AllowZT = false;
-            // if ENinsulinReqPct_NoENTT has reduced the insulinReqPct (insulinReqPctChanged)
+            // if EN_SMB_percent has reduced the insulinReqPct (insulinReqPctChanged)
             if (insulinReqPctChanged && insulinReq > 0) AllowZT = false;
 
             // No ZT allowed by EN
