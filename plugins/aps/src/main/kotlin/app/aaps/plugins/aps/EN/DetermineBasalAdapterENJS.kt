@@ -301,7 +301,8 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
         this.profile.put("EN_Use_BGPlus", sp.getBoolean(R.string.en_use_bgplus, false))
 
         // this.profile.put("EN_UseTBR_NoENTT", sp.getBoolean(R.string.key_noentt_use_tbr, false))
-        this.profile.put("EN_SMB_percent", sp.getInt(R.string.en_smb_percentage, 75))
+        this.profile.put("EN_SMB_percent", sp.getInt(R.string.en_smb_percent, 75))
+        this.profile.put("ENW_SMB_percent", sp.getInt(R.string.enw_smb_percent, 75))
 
 
 //**********************************************************************************************************************************************

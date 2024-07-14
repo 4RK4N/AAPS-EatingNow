@@ -508,6 +508,16 @@
                     validate:floatminNumber="0"
                     validate:testType="floatNumericRange"/>
 
+                <app.aaps.core.validators.ValidatingEditTextPreference
+                    android:defaultValue="75"
+                    android:inputType="number"
+                    android:title="SMB Percentage outside ENW"
+                    android:key="en_smb_percent"
+                    android:dialogMessage="All treatments outside ENW will provide SMB as a percentage of insulinReq with remaining as TBR. This is restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+). Other temptargets will not be impacted."
+                    validate:maxNumber="75"
+                    validate:minNumber="0"
+                    validate:testType="numericRange" />
+
 <!--                <SwitchPreference-->
 <!--                    android:defaultValue="false"-->
 <!--                    android:key="key_noentt_use_tbr"-->
@@ -580,9 +590,9 @@
             <app.aaps.core.validators.ValidatingEditTextPreference
                 android:defaultValue="75"
                 android:inputType="number"
-                android:title="SMB Percentage"
-                android:key="en_smb_percent"
-                android:dialogMessage="All treatments will provide SMB as a percentage of insulinReq with remaining as TBR. This is restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+). Other temptargets will not be impacted."
+                android:title="SMB Percentage within ENW"
+                android:key="enw_smb_percent"
+                android:dialogMessage="All treatments within ENW will provide SMB as a percentage of insulinReq with remaining as TBR. This is restricted to the respective prediction types maxBolus (UAM, UAM+ and BG+). Other temptargets will not be impacted."
                 validate:maxNumber="75"
                 validate:minNumber="0"
                 validate:testType="numericRange" />

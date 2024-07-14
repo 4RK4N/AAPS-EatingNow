@@ -247,7 +247,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     var ENPBActive = (typeof meal_data.activeENPB == 'undefined' ? false : meal_data.activeENPB);
     var HighTempTargetSet = (!ENTTActive && profile.temptargetSet && target_bg > normalTarget);
     //var EN_UseTBR_NoENTT = (profile.EN_UseTBR_NoENTT & !ENTTActive && !ENPBActive && !HighTempTargetSet);
-    var EN_SMB_percent = profile.EN_SMB_percent/100;
 
 
     // variables for deltas
@@ -1745,7 +1744,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             }
 
             var ENinsulinReqPct = 0.75; // EN insulinReqPct is 75%
-            EN_SMB_percent = profile.EN_SMB_percent/100;
+            var EN_SMB_percent = (ENWindowOK ? profile.ENW_SMB_percent : profile.EN_SMB_percent) /100; // use EN_SMB_percent to indicate EN vs ENW SMB%
             var insulinReqPctChanged = false;
             var ENWinsulinReqPct = (ENWStartedAgo <= ENWindowDuration ? 1 : ENinsulinReqPct); // ENW insulinReqPct is 100% for the first 30 mins then 85%
 
@@ -1753,7 +1752,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             // ============== INSULINREQPCT CHANGES ==============
             if (ENactive) insulinReqPct = ENinsulinReqPct;
             if (ENWindowOK) insulinReqPct = ENWinsulinReqPct;
-            if (!HighTempTargetSet && EN_SMB_percent < insulinReqPct && !UAMBGPreBolus) insulinReqPctChanged = true; // var for EN_SMB_percent
+            if (!HighTempTargetSet && EN_SMB_percent != insulinReqPct && !UAMBGPreBolus) insulinReqPctChanged = true; // var for EN_SMB_percent
             insulinReqPct = (insulinReqPctChanged ? EN_SMB_percent: insulinReqPct); // update insulinReqPct if reduced
 
             // PreBolus period gets 100% insulinReqPct
