@@ -1258,8 +1258,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     if (UAMBGPreBolus && sens_predType != "UAM+") sens_predType = "PB";
 
     // TBR for tt that isn't EN at normal target
-    if (profile.temptargetSet && !ENTTActive && target_bg == normalTarget) sens_predType = "TBR";
-//    if (profile.temptargetSet && !ENTTActive && target_bg == normalTarget) sens_predType = "BG+";     // TESTING ONLY
+    //if (profile.temptargetSet && !ENTTActive && target_bg == normalTarget) sens_predType = "TBR";
 
     // evaluate prediction type and weighting - Only use during when EN active or sensitive or resistant
     if (ENactive || TIR_sens_limited !=1 && !HighTempTargetSet) {
@@ -1936,9 +1935,16 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
                 // Calculate rate
                 rate = Math.min(maxBolus - microBolus, insulinReq * insulinReqPct);
+                // if AAPS original insulinReq is higher allow allow remaining insulinReqPct as TBR
                 if (insulinReqOrig >= ENMaxSMB && ENactive) {
                     rate = (insulinReq * insulinReqPct) - microBolus;
                 }
+
+                // if TT is target and not EN TT allow remaining insulinReq as TBR *** EXPERIMENT ***
+                if (profile.temptargetSet && !ENTTActive && target_bg == normalTarget) {
+                    rate = (insulinReq * insulinReqPct_orig) - microBolus;
+                }
+
                 rate *= 12; // Allow TBR to deliver it within the 5m loop iteration
                 rate = Math.max(0, rate); // ZT is minimum
                 rate = round_basal(rate, profile);
