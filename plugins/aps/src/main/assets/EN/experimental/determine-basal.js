@@ -1941,7 +1941,9 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 }
 
                 // if TT is target and not EN TT allow remaining insulinReq as TBR *** EXPERIMENT ***
-                if (profile.temptargetSet && !ENTTActive && target_bg == normalTarget) {
+                //if (profile.temptargetSet && !ENTTActive && target_bg == normalTarget) {
+                // if TIRS > 1 allow remaining insulinReq as TBR *** EXPERIMENT ***
+                if (TIR_sens_limited > 1) {
                     rate = (insulinReq * insulinReqPct_orig) - microBolus;
                 }
 
