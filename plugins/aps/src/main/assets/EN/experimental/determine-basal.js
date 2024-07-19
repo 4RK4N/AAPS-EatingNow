@@ -1301,7 +1301,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 // eventualBG = Math.min(eventualBG, eBGmax); // safety max of eBGmax
                 // when favouring minPredBG allow more of eventualBG if resistance detected
                 //eBGweight = (eBGweight == 0 && ENtimeOK ? 0.5 : eBGweight); // if daytime allow more eBGw
-                if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.55;
             } else { // low delta but accelerating no LGS bypass
                 // when favouring minPredBG allow more of eventualBG if resistance detected
                 //eBGweight = (eBGweight == 0 && ENtimeOK ? 0.5 : eBGweight); // if daytime allow more eBGw
@@ -1309,6 +1308,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             // allow more eBG when reistant with TBR enabled for all UAM+
             //if (eBGweight == eBGweight_orig && ENactive) eBGweight = 0.75;
             //if (EN_SMB_percent == 0 && eBGweight == eBGweight_orig) eBGweight = 0.75;
+            if (eBGweight == eBGweight_orig && ENactive && TIR_sens_limited > 1) eBGweight = 0.55;
         }
 
         // UAM predictions, no COB or GhostCOB
