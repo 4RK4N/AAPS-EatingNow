@@ -1942,9 +1942,10 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
                 // if TT is target and not EN TT allow remaining insulinReq as TBR *** EXPERIMENT ***
                 //if (profile.temptargetSet && !ENTTActive && target_bg == normalTarget) {
-                // if TIRS > 1 allow remaining insulinReq as TBR *** EXPERIMENT ***
+                // if TIRS > 1 allow remaining insulinReq up to insulinReqPct, if TIRS maxes out allow all as TBR *** EXPERIMENT ***
                 if (TIR_sens_limited > 1) {
-                    rate = (insulinReq * insulinReqPct_orig) - microBolus;
+                    //rate = (insulinReq * insulinReqPct_orig) - microBolus;
+                    rate = (insulinReq * (TIR_sens_limited == autosens_max_tirs ? 1 : insulinReqPct_orig) - microBolus);
                 }
 
                 rate *= 12; // Allow TBR to deliver it within the 5m loop iteration
