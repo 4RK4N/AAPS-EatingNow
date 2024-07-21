@@ -1937,8 +1937,10 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 // Calculate rate
                 rate = Math.min(maxBolus - microBolus, insulinReq * insulinReqPct);
                 // if AAPS original insulinReq is higher allow allow remaining insulinReqPct as TBR
-                if (insulinReqOrig >= ENMaxSMB && ENactive) {
-                    rate = (insulinReq * insulinReqPct) - microBolus;
+                //if (insulinReqOrig >= ENMaxSMB && ENactive) {
+                if (insulinReqOrig > 0 && ENactive) {
+                    //rate = (insulinReq * insulinReqPct) - microBolus;
+                    rate = (insulinReq * insulinReqPct_orig) - microBolus;
                 }
 
                 // if TT is target and not EN TT allow remaining insulinReq as TBR *** EXPERIMENT ***
