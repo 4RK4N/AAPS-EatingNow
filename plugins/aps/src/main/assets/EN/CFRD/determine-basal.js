@@ -188,8 +188,6 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
 
     var max_iob = profile.max_iob; // maximum amount of non-bolus IOB OpenAPS will ever deliver
     var max_iob_en = profile.EN_max_iob; // maximum amount IOB EN will deliver before falling back to AAPS maxBolus
-    max_iob_en = (bg > 150 ? bg / 100 : max_iob_en); // CFRD
-    var endebug = "CFRD: max_iob_en=" + round(max_iob_en,2);
 
     // if min and max are set, then set target to their average
     var target_bg;
@@ -309,6 +307,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         }
     }
     */
+    max_iob_en = (ENTTActive && bg >= 130 ? bg / 100 : max_iob_en); // CFRD
+    var endebug = "CFRD: max_iob_en=" + round(max_iob_en,2);
 
     if (typeof iob_data === 'undefined') {
         rT.error = 'Error: iob_data undefined. ';
