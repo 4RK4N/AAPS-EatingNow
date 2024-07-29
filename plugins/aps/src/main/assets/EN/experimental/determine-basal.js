@@ -1920,7 +1920,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             rT.reason += (typeof endebug !== 'undefined' && !rT.reason.includes("DEBUG") ? "** DEBUG: " + endebug + "** ": "");
 
             // SAFETY: if an SMB given reduce the temp rate when not sensitive including ENW to deliver remaining insulinReq over 20m
-            if (microBolus && TIR_sens_limited >= 1) {
+            if (microBolus && TIR_sens_limited >= 1 && UAMBGPreBolusUnitsLeft == 0) {
                 //rate = Math.max(basal + (insulinReq * 2 - microBolus), 0); //remaining insulinReq over 60 minutes * 2 = 30 minutes
                 rate = Math.max(basal + (insulinReq * 3 - microBolus), 0); //remaining insulinReq over 60 minutes * 3 = 20 minutes
                 rate = round_basal(rate, profile);
