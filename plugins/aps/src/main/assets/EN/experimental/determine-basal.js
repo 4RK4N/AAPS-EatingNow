@@ -505,7 +505,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     // apply autosens limit to TIR_sens_limited with extra profile switch if using scale_isf_profile
     TIR_sens_limited = Math.min(TIR_sens, autosens_max_tirs);
     TIR_sens_limited = Math.max(TIR_sens_limited, profile.autosens_min);
-    var endebug = "as_max_tirs:" + autosens_max_tirs + ", TIRsltd:" + TIR_sens_limited;
+//    var endebug = "as_max_tirs:" + autosens_max_tirs + ", TIRsltd:" + TIR_sens_limited;
 
     // ******  END TIR_sens - a very simple implementation of autoISF configurable % per hour
 
@@ -1369,7 +1369,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             insulinReq_sens = (ENtimeOK ? dynISF(insulinReq_bg,target_bg,insulinReq_sens_normalTarget,ins_val) : sens);
 
             // when resistant use the stronger ISF
-            if (TIR_sens_limited == autosens_max_tirs) insulinReq_sens = Math.min(dynISF(insulinReq_bg,target_bg,insulinReq_sens_normalTarget,ins_val), insulinReq_sens);
+            if (TIR_sens_limited == autosens_max_tirs) insulinReq_sens = Math.min(dynISF(insulinReq_bg,target_bg,sens_normalTarget,ins_val), insulinReq_sens);
         }
 
         // IOB prediction - 50% eBGw and eventualBG with negative IOB
@@ -1433,7 +1433,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     if (profile.use_sens_LCTDD) rT.reason += ", LCTDD:" + round(meal_data.TDDLastCannula,2) + " " + (profile.sens_TDD_scale != 100 ? profile.sens_TDD_scale + "% " : "") + "(" + convert_bg(sens_LCTDD, profile) + ")";
     rT.reason += ", TDD7:" + round(meal_data.TDDAvg7d,2);
     if (profile.use_autosens) rT.reason += ", AS: " + round(autosens_data.ratio, 2);
-    if (TIRS_percent > 0) rT.reason += ", ISF@" + TIRS_percent + "%hr: " + round(TIR_sens*100) + (round(TIR_sens_limited*100) != round(TIR_sens*100) ? "=" + round(TIR_sens_limited*100) : "");
+    if (TIRS_percent > 0) rT.reason += ", ISF@" + TIRS_percent + "%hr: " + TIR_sens.toFixed(2) + (round(TIR_sens_limited*100) != round(TIR_sens*100) ? "=" + TIR_sens_limited.toFixed(2) : "");
     if (profile.enableSRTDD) rT.reason += ", Basal%: " + round(SR_TDD*100) + (round(sensitivityRatio*100) != round(SR_TDD*100) ? "=" + round(sensitivityRatio*100) : "");
     rT.reason += ", LGS: " + convert_bg(threshold, profile);
     rT.reason += ", LRT: " + round(60 * minAgo);
