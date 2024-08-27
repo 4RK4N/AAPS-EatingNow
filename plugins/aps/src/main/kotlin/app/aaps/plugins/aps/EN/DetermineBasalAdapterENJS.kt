@@ -287,6 +287,7 @@ class DetermineBasalAdapterENJS internal constructor(private val scriptReader: S
         this.profile.put("ENWMinBolus", enwMinBolus)
         this.profile.put("ENautostart", sp.getBoolean(R.string.key_enautostart, false))
         this.profile.put("SMBbgOffset",profileUtil.convertToMgdl(sp.getDouble(R.string.key_eatingnow_smbbgoffset, 0.0), profileFunction.getUnits()))
+        this.profile.put("SMBbgOffset_day",profileUtil.convertToMgdl(sp.getDouble(R.string.key_eatingnow_smbbgoffset_day, 0.0), profileFunction.getUnits()))
         this.profile.put("ISFbgscaler", sp.getDouble(R.string.key_eatingnow_isfbgscaler, 0.0))
         this.profile.put("MaxISFpct", sp.getInt(R.string.key_eatingnow_maxisfpct, 0))
         this.profile.put("useDynISF", sp.getBoolean(R.string.key_use_dynamicISF, true))
