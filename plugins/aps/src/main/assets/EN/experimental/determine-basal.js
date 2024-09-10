@@ -1837,7 +1837,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
                 maxBolus = Math.floor(maxBolus * roundSMBTo) / roundSMBTo;
                 maxBolus = round(maxBolus, 2);
             }
-            if (!SMBinMins && profile.percent !=100 && !UAMBGPreBolusUnitsLeft) maxBolus *= (profile.percent/100); // scale maxBolus when not using minutes and profile switch percentage
+            if (!SMBinMins && profile.percent !=100) maxBolus *= (profile.percent/100); // scale maxBolus when not using minutes and profile switch percentage
             //var endebug = "ENMaxSMB:"+ENMaxSMB;
 
             // ============== IOB RESTRICTION  ==============
