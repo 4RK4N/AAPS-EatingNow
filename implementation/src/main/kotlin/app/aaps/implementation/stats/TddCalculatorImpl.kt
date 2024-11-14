@@ -1,3 +1,4 @@
+// Modified for Eating Now
 package app.aaps.implementation.stats
 
 import android.content.Context
@@ -117,6 +118,41 @@ class TddCalculatorImpl @Inject constructor(
         if (tdd.bolusAmount > 0 || tdd.basalAmount > 0 || tbrFound) return tdd
         return null
     }
+
+    override fun calculateENWIOB(startTime: Long, endTime: Long, allowMissingData: Boolean): TotalDailyDose? {
+        val startTimeAligned = startTime - startTime % (5 * 60 * 1000)
+        val endTimeAligned = endTime - endTime % (5 * 60 * 1000)
+        val tdd = TotalDailyDose(timestamp = startTimeAligned)
+        var tbrFound = false
+        repository.getBolusesDataFromTimeToTime(startTime, endTime, true).blockingGet()
+            .filter { it.type != Bolus.Type.PRIMING }
+            .forEach { t ->
+                tdd.bolusAmount += t.amount
+            }
+        // repository.getCarbsDataFromTimeToTimeExpanded(startTime, endTime, true).blockingGet().forEach { t ->
+        //     tdd.carbs += t.amount
+        // }
+        val calculationStep = T.mins(5).msecs()
+        for (t in startTimeAligned until endTimeAligned step calculationStep) {
+
+            val profile = profileFunction.getProfile(t) ?: if (allowMissingData) continue else return null
+            val tbr = iobCobCalculator.getBasalData(profile, t)
+            if (tbr.isTempBasalRunning) tbrFound = true
+            val rate = tbr.tempBasalAbsolute - tbr.basal
+            tdd.basalAmount += rate / 60.0 * 5.0
+
+            if (!activePlugin.activePump.isFakingTempsByExtendedBoluses) {
+                val eb = iobCobCalculator.getExtendedBolus(t)
+                val absoluteEbRate = eb?.rate ?: 0.0
+                tdd.bolusAmount += absoluteEbRate / 60.0 * 5.0
+            }
+        }
+        tdd.totalAmount = tdd.bolusAmount + tdd.basalAmount
+        aapsLogger.debug(LTag.CORE, tdd.toString())
+        if (tdd.bolusAmount > 0 || tdd.basalAmount > 0 || tbrFound) return tdd
+        return null
+    }
+
 
     override fun averageTDD(tdds: LongSparseArray<TotalDailyDose>?): TotalDailyDose? {
         val totalTdd = TotalDailyDose(timestamp = dateUtil.now())

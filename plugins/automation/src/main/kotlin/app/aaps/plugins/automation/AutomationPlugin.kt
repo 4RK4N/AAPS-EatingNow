@@ -40,6 +40,7 @@ import app.aaps.plugins.automation.actions.ActionRunAutotune
 import app.aaps.plugins.automation.actions.ActionSendSMS
 import app.aaps.plugins.automation.actions.ActionStartTempTarget
 import app.aaps.plugins.automation.actions.ActionStartENTempTarget
+import app.aaps.plugins.automation.actions.ActionBasalCancel
 import app.aaps.plugins.automation.actions.ActionStopProcessing
 import app.aaps.plugins.automation.actions.ActionStopTempTarget
 import app.aaps.plugins.automation.elements.Comparator
@@ -379,7 +380,8 @@ class AutomationPlugin @Inject constructor(
             ActionProfileSwitch(injector),
             ActionRunAutotune(injector),
             ActionSendSMS(injector),
-            ActionStartENTempTarget(injector)
+            ActionStartENTempTarget(injector),
+            ActionBasalCancel(injector)
         )
     }
 

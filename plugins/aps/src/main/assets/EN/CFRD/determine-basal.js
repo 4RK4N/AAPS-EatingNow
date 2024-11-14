@@ -307,6 +307,8 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
         }
     }
     */
+    max_iob_en = (ENTTActive && bg >= 130 ? bg / 100 : max_iob_en); // CFRD
+//    var endebug = "CFRD: max_iob_en=" + round(max_iob_en,2);
 
     if (typeof iob_data === 'undefined') {
         rT.error = 'Error: iob_data undefined. ';
@@ -1374,7 +1376,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
             insulinReq_sens = (ENtimeOK ? dynISF(insulinReq_bg,target_bg,insulinReq_sens_normalTarget,ins_val) : sens);
 
             // when resistant use the stronger ISF
-            if (TIR_sens_limited == autosens_max_tirs) insulinReq_sens = Math.min(dynISF(insulinReq_bg,target_bg,insulinReq_sens_normalTarget,ins_val), insulinReq_sens);
+            if (TIR_sens_limited == autosens_max_tirs) insulinReq_sens = Math.min(dynISF(insulinReq_bg,target_bg,sens_normalTarget,ins_val), insulinReq_sens);
         }
 
         // IOB prediction - 50% eBGw and eventualBG with negative IOB
@@ -1513,7 +1515,7 @@ var determine_basal = function determine_basal(glucose_status, currenttemp, iob_
     carbsReq = round(carbsReq);
     console.error("naive_eventualBG:", naive_eventualBG, "bgUndershoot:", bgUndershoot, "zeroTempDuration:", zeroTempDuration, "zeroTempEffect:", zeroTempEffect, "carbsReq:", carbsReq);
     console.log("===============================");
-    console.log("Eating Now stable variant");
+    console.log("Eating Now CFRD variant");
     console.log("===============================");
     console.log(enlog);
     console.log("==============================");

@@ -11,6 +11,7 @@ interface TddCalculator {
     fun calculateToday(): TotalDailyDose?
     fun calculateDaily(startHours: Long, endHours: Long): TotalDailyDose?
     fun calculate(startTime: Long, endTime: Long, allowMissingData: Boolean): TotalDailyDose?
+    fun calculateENWIOB(startTime: Long, endTime: Long, allowMissingData: Boolean): TotalDailyDose?
     fun averageTDD(tdds: LongSparseArray<TotalDailyDose>?): TotalDailyDose?
     fun stats(context: Context): TableLayout
 }

@@ -166,5 +166,8 @@
     <string name="key_en_variant" translatable="false">en_variant</string>
     <string name="key_eatingnow_uambgboost_maxbolus_bkfast">key_eatingnow_uambgboost_maxbolus_bkfast</string>
     <string name="key_eatingnow_uambgboost_maxbolus">key_eatingnow_uambgboost_maxbolus</string>
+    <string name="key_enw_breakfast_max_tdd">key_enw_breakfast_max_tdd</string>
+    <string name="key_enw_max_tdd">key_enw_max_tdd</string>
+
 
 </resources>
